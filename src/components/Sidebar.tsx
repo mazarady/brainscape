@@ -1,0 +1,83 @@
+import { useRef, type Dispatch } from 'react';
+import type { AppState } from '../types';
+import { allCards, mastery } from '../scheduler';
+import { isValidState, type Action } from '../store';
+
+export default function Sidebar({
+  state,
+  activeClassId,
+  dispatch,
+  onSelect,
+  onCreate,
+}: {
+  state: AppState;
+  activeClassId?: string;
+  dispatch: Dispatch<Action>;
+  onSelect: (id: string) => void;
+  onCreate: () => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const exportData = () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `recall-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  const importData = async (file: File) => {
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!isValidState(parsed)) throw new Error('bad');
+      if (confirm('Replace all your classes with the contents of this backup?')) dispatch({ type: 'replace', state: parsed });
+    } catch {
+      alert('That file is not a valid Recall backup.');
+    }
+  };
+
+  return (
+    <aside className="sidebar">
+      <div className="brand">
+        <span className="brand-mark">🧠</span>
+        <span>Recall</span>
+      </div>
+      <div className="sidebar-section-title">My Classes ({state.classes.length})</div>
+      <ul className="class-list">
+        {state.classes.map((c) => {
+          const m = mastery(allCards(c.decks));
+          return (
+            <li key={c.id}>
+              <button className={`class-item ${c.id === activeClassId ? 'active' : ''}`} onClick={() => onSelect(c.id)}>
+                <span className="class-icon" style={{ background: c.color }}>{c.icon}</span>
+                <span className="class-meta">
+                  <span className="class-name">{c.name}</span>
+                  <span className="bar"><span style={{ width: `${m}%` }} /></span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <button className="add-class" onClick={onCreate}>
+        <span className="plus">+</span> Add new class
+      </button>
+      <div className="sidebar-foot">
+        <button className="link-btn" onClick={exportData}>Export backup</button>
+        <button className="link-btn" onClick={() => fileRef.current?.click()}>Import backup</button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) importData(f);
+            e.target.value = '';
+          }}
+        />
+      </div>
+    </aside>
+  );
+}
