@@ -96,6 +96,21 @@ describe('auth API', () => {
     expect(statuses.at(-1)).toBe(429);
   });
 
+  it('deletes the account and all its data only with the right password', async () => {
+    await call('POST', '/api/auth/signup', { email: 'a@b.co', password: 'longenough' });
+    await call('PUT', '/api/data', { data: state, rev: 0 });
+    const session = cookie;
+    expect((await call('POST', '/api/auth/delete-account', { password: 'wrongwrong' })).status).toBe(401);
+    expect((await call('POST', '/api/auth/delete-account', { password: 'longenough' })).status).toBe(200);
+    cookie = session;
+    expect((await call('GET', '/api/auth/me')).body.user).toBeNull();
+    cookie = '';
+    expect((await call('POST', '/api/auth/login', { email: 'a@b.co', password: 'longenough' })).status).toBe(401);
+    // The email can be registered again, starting from scratch.
+    expect((await call('POST', '/api/auth/signup', { email: 'a@b.co', password: 'longenough' })).status).toBe(201);
+    expect((await call('GET', '/api/data')).body.data).toBeNull();
+  });
+
   it('blocks cross-origin and non-JSON state-changing requests', async () => {
     const cross = await call('POST', '/api/auth/login', { email: 'a@b.co', password: 'x' }, { headers: { origin: 'https://evil.example' } });
     expect(cross.status).toBe(403);

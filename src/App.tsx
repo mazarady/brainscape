@@ -27,11 +27,13 @@ export default function App({
   initialState,
   initialRev,
   onLogout,
+  onDeleted,
 }: {
   user: User;
   initialState: AppState;
   initialRev: number;
   onLogout: () => void;
+  onDeleted: () => void;
 }) {
   const [state, dispatch, saveStatus] = useAppStore(initialState, initialRev);
   const banner = STATUS_MESSAGES[saveStatus] && (
@@ -91,6 +93,7 @@ export default function App({
         user={user}
         saveStatus={saveStatus}
         onLogout={onLogout}
+        onDeleted={onDeleted}
         onSelect={(id) => go({ name: 'class', classId: id })}
         onCreate={() => setCreatingClass(true)}
       />

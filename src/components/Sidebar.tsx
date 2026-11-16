@@ -1,8 +1,9 @@
-import { useRef, type Dispatch } from 'react';
+import { useRef, useState, type Dispatch } from 'react';
+import Modal from './Modal';
 import type { AppState } from '../types';
 import { allCards, mastery } from '../scheduler';
 import { isValidState, type Action, type SaveStatus } from '../store';
-import type { User } from '../api';
+import { deleteAccount, type User } from '../api';
 
 export default function Sidebar({
   state,
@@ -13,10 +14,12 @@ export default function Sidebar({
   user,
   saveStatus,
   onLogout,
+  onDeleted,
 }: {
   user: User;
   saveStatus: SaveStatus;
   onLogout: () => void;
+  onDeleted: () => void;
   state: AppState;
   activeClassId?: string;
   dispatch: Dispatch<Action>;
@@ -24,6 +27,10 @@ export default function Sidebar({
   onCreate: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   const exportData = () => {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -81,7 +88,37 @@ export default function Sidebar({
         >
           Sign out
         </button>
+        <button className="link-btn subtle" onClick={() => setDeleting(true)}>Delete account</button>
       </div>
+      {deleting && (
+        <Modal title="Delete your account?" onClose={() => setDeleting(false)}>
+          <form
+            className="form"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setBusy(true);
+              const r = await deleteAccount(password);
+              setBusy(false);
+              if (r.error) setError(r.error);
+              else onDeleted();
+            }}
+          >
+            <p className="muted small">
+              This permanently deletes <strong>{user.email}</strong> and all of its classes, decks and cards. It can’t be undone.
+              Consider exporting a backup first.
+            </p>
+            <label>
+              Enter your password to confirm
+              <input type="password" autoComplete="current-password" autoFocus required value={password} onChange={(e) => setPassword(e.target.value)} />
+            </label>
+            {error && <div className="auth-error" role="alert">{error}</div>}
+            <div className="form-actions">
+              <button type="button" className="btn" onClick={() => setDeleting(false)}>Cancel</button>
+              <button type="submit" className="btn danger" disabled={busy || !password}>{busy ? 'Deleting…' : 'Delete account'}</button>
+            </div>
+          </form>
+        </Modal>
+      )}
       <div className="sidebar-foot">
         <button className="link-btn" onClick={exportData}>Export backup</button>
         <button className="link-btn" onClick={() => fileRef.current?.click()}>Import backup</button>

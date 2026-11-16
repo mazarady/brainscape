@@ -59,3 +59,12 @@ export async function saveData(data: AppState, rev: number): Promise<SaveResult>
     return { ok: false, reason: 'offline' };
   }
 }
+
+export async function deleteAccount(password: string): Promise<{ error?: string }> {
+  try {
+    const r = await request<{ ok?: boolean; error?: string }>('POST', '/api/auth/delete-account', { password });
+    return r.data.ok ? {} : { error: r.data.error ?? 'Could not delete your account.' };
+  } catch {
+    return { error: 'Could not reach the server. Check your connection.' };
+  }
+}

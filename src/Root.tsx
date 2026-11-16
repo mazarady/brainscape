@@ -84,6 +84,7 @@ export default function Root() {
         await logout();
         setPhase({ name: 'signed-out' });
       }}
+      onDeleted={() => setPhase({ name: 'signed-out' })}
     />
   );
 }

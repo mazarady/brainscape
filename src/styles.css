@@ -289,3 +289,6 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
 .save-banner { display: flex; align-items: center; gap: 16px; background: #fff6e0; border: 1px solid #f2c94c; color: #6b4e00; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; }
 #root > .save-banner { margin: 0; border-radius: 0; }
 .save-banner span { flex: 1; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.danger:hover:not(:disabled) { background: #b83636; }
+.account .link-btn.subtle { color: #8fa0b8; font-weight: 400; font-size: 0.8rem; margin-top: 0; }

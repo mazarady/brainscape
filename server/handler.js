@@ -203,6 +203,24 @@ export function createHandler({ db, passwordCost }) {
         return json(200, { ok: true }, { 'set-cookie': sessionCookie(secure, '', 0) });
       }
 
+      if (path === '/api/auth/delete-account' && method === 'POST') {
+        if (!session) return json(401, { error: 'Not signed in.' });
+        const wait = await rateLimit(`email:${session.email}`, LIMITS.email);
+        if (wait) return json(429, { error: 'Too many attempts. Try again later.' }, { 'retry-after': String(wait) });
+        const { body, tooLarge, malformed } = await readJson(req);
+        if (tooLarge || malformed) return json(400, { error: 'Invalid request.' });
+        const password = typeof body?.password === 'string' ? body.password : '';
+        const { rows } = await db.query(`SELECT password_hash FROM users WHERE id = $1`, [session.userId]);
+        // Re-check the password so a hijacked or unattended session can't destroy the account.
+        if (!rows[0] || password.length > 256 || !(await verifyPassword(password, rows[0].password_hash))) {
+          return json(401, { error: 'Incorrect password.' });
+        }
+        // Sessions and data are removed by ON DELETE CASCADE.
+        await db.query(`DELETE FROM users WHERE id = $1`, [session.userId]);
+        await db.query(`DELETE FROM rate_limits WHERE key = $1`, [`email:${session.email}`]);
+        return json(200, { ok: true }, { 'set-cookie': sessionCookie(secure, '', 0) });
+      }
+
       // ---- user data (requires sign-in) ----
       if (path === '/api/data') {
         if (!session) return json(401, { error: 'Not signed in.' });
