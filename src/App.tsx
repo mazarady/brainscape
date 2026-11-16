@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useAppStore } from './store';
+import { useAppStore, type SaveStatus } from './store';
+import type { User } from './api';
+import type { AppState } from './types';
 import Sidebar from './components/Sidebar';
 import ClassView from './components/ClassView';
 import StudyView from './components/StudyView';
@@ -14,8 +16,30 @@ export type View =
   | { name: 'study'; classId: string; deckIds?: string[] }
   | { name: 'edit'; classId: string; deckId: string };
 
-export default function App() {
-  const [state, dispatch] = useAppStore();
+const STATUS_MESSAGES: Partial<Record<SaveStatus, string>> = {
+  conflict: 'Your flashcards were changed in another tab or device, so recent changes here weren’t saved. Reload to get the latest version.',
+  'signed-out': 'You’ve been signed out, so recent changes weren’t saved. Reload to sign in again.',
+  'too-large': 'Your data is too large to save. Try removing some cards.',
+};
+
+export default function App({
+  user,
+  initialState,
+  initialRev,
+  onLogout,
+}: {
+  user: User;
+  initialState: AppState;
+  initialRev: number;
+  onLogout: () => void;
+}) {
+  const [state, dispatch, saveStatus] = useAppStore(initialState, initialRev);
+  const banner = STATUS_MESSAGES[saveStatus] && (
+    <div className="save-banner" role="alert">
+      <span>{STATUS_MESSAGES[saveStatus]}</span>
+      {saveStatus !== 'too-large' && <button className="btn sm" onClick={() => location.reload()}>Reload</button>}
+    </div>
+  );
   const [view, setView] = useState<View>(() =>
     state.classes[0] ? { name: 'class', classId: state.classes[0].id } : { name: 'home' },
   );
@@ -30,7 +54,12 @@ export default function App() {
   };
 
   if (view.name === 'study' && activeClass) {
-    return <StudyView cls={activeClass} deckIds={view.deckIds} dispatch={dispatch} onExit={() => go({ name: 'class', classId: activeClass.id })} />;
+    return (
+      <>
+        {banner}
+        <StudyView cls={activeClass} deckIds={view.deckIds} dispatch={dispatch} onExit={() => go({ name: 'class', classId: activeClass.id })} />
+      </>
+    );
   }
 
   let main;
@@ -59,12 +88,18 @@ export default function App() {
         state={state}
         activeClassId={activeClass?.id}
         dispatch={dispatch}
+        user={user}
+        saveStatus={saveStatus}
+        onLogout={onLogout}
         onSelect={(id) => go({ name: 'class', classId: id })}
         onCreate={() => setCreatingClass(true)}
       />
       <button className="menu-toggle" aria-label="Toggle menu" onClick={() => setMenuOpen((o) => !o)}>☰</button>
       <div className="scrim" onClick={() => setMenuOpen(false)} />
-      <main className="main">{main}</main>
+      <main className="main">
+        {banner}
+        {main}
+      </main>
       {creatingClass && (
         <Modal title="Create a new class" onClose={() => setCreatingClass(false)}>
           <ClassForm

@@ -1,9 +1,8 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { saveData } from './api';
 import type { AppState, Card, Deck, Rating, StudyClass, StudyOrder } from './types';
 import { rateCard } from './scheduler';
-import { newCard, newClass, newDeck, seedState } from './seed';
-
-const STORAGE_KEY = 'recall-flashcards-v1';
+import { newCard, newClass, newDeck } from './seed';
 
 export type Action =
   | { type: 'replace'; state: AppState }
@@ -115,32 +114,74 @@ export function reducer(s: AppState, a: Action): AppState {
   }
 }
 
-function load(): AppState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as AppState;
-      if (parsed && parsed.version === 1 && Array.isArray(parsed.classes)) return parsed;
-    }
-  } catch {
-    /* fall through to seed */
-  }
-  return seedState();
-}
-
 export function isValidState(x: unknown): x is AppState {
   const s = x as AppState;
   return !!s && s.version === 1 && Array.isArray(s.classes) && s.classes.every((c) => Array.isArray(c.decks));
 }
 
-export function useAppStore() {
-  const [state, dispatch] = useReducer(reducer, undefined, load);
-  useEffect(() => {
+export type SaveStatus = 'saved' | 'saving' | 'offline' | 'conflict' | 'signed-out' | 'too-large';
+
+const SAVE_DELAY_MS = 800;
+
+/**
+ * App state held in memory and saved to the server (debounced). Saves are sent one at a
+ * time with the last known revision, so a stale tab gets a conflict instead of
+ * overwriting newer data.
+ */
+export function useAppStore(initial: AppState, initialRev: number) {
+  const [state, dispatch] = useReducer(reducer, initial);
+  const [status, setStatus] = useState<SaveStatus>('saved');
+  const rev = useRef(initialRev);
+  const saved = useRef(initial);
+  const latest = useRef(state);
+  const inFlight = useRef(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const stopped = useRef(false);
+  latest.current = state;
+
+  const flush = useCallback(async () => {
+    if (inFlight.current || stopped.current || latest.current === saved.current) return;
+    inFlight.current = true;
+    const sending = latest.current;
+    setStatus('saving');
+    let offline = false;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      /* storage full or unavailable — keep working in memory */
+      const r = await saveData(sending, rev.current);
+      if (r.ok) {
+        rev.current = r.rev;
+        saved.current = sending;
+        setStatus(latest.current === sending ? 'saved' : 'saving');
+      } else {
+        if (r.reason === 'offline') offline = true;
+        else stopped.current = true;
+        setStatus(r.reason);
+      }
+    } finally {
+      inFlight.current = false;
     }
-  }, [state]);
-  return [state, dispatch] as const;
+    if (!stopped.current && latest.current !== saved.current) {
+      clearTimeout(timer.current);
+      timer.current = setTimeout(flush, offline ? 5000 : SAVE_DELAY_MS);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (state === saved.current || stopped.current) return;
+    clearTimeout(timer.current);
+    timer.current = setTimeout(flush, SAVE_DELAY_MS);
+  }, [state, flush]);
+
+  // Warn before closing the tab with unsaved changes, and try one last save.
+  useEffect(() => {
+    const onUnload = (e: BeforeUnloadEvent) => {
+      if (latest.current === saved.current || stopped.current) return;
+      flush();
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onUnload);
+    return () => window.removeEventListener('beforeunload', onUnload);
+  }, [flush]);
+
+  return [state, dispatch, status] as const;
 }

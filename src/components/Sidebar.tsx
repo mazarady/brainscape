@@ -1,7 +1,8 @@
 import { useRef, type Dispatch } from 'react';
 import type { AppState } from '../types';
 import { allCards, mastery } from '../scheduler';
-import { isValidState, type Action } from '../store';
+import { isValidState, type Action, type SaveStatus } from '../store';
+import type { User } from '../api';
 
 export default function Sidebar({
   state,
@@ -9,7 +10,13 @@ export default function Sidebar({
   dispatch,
   onSelect,
   onCreate,
+  user,
+  saveStatus,
+  onLogout,
 }: {
+  user: User;
+  saveStatus: SaveStatus;
+  onLogout: () => void;
   state: AppState;
   activeClassId?: string;
   dispatch: Dispatch<Action>;
@@ -63,6 +70,18 @@ export default function Sidebar({
       <button className="add-class" onClick={onCreate}>
         <span className="plus">+</span> Add new class
       </button>
+      <div className="account">
+        <div className="account-email" title={user.email}>{user.email}</div>
+        <div className={`save-status ${saveStatus}`}>
+          {saveStatus === 'saved' ? 'All changes saved' : saveStatus === 'saving' ? 'Saving…' : saveStatus === 'offline' ? 'Offline — retrying…' : 'Not saved'}
+        </div>
+        <button
+          className="link-btn"
+          onClick={() => (saveStatus === 'saved' || confirm('Some changes haven’t been saved yet. Sign out anyway?')) && onLogout()}
+        >
+          Sign out
+        </button>
+      </div>
       <div className="sidebar-foot">
         <button className="link-btn" onClick={exportData}>Export backup</button>
         <button className="link-btn" onClick={() => fileRef.current?.click()}>Import backup</button>
