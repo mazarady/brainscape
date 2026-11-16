@@ -40,7 +40,9 @@ Deploys build with `npm run build` and publish `dist/` (see `netlify.toml`). The
 - Strict security headers (CSP, HSTS, `frame-ancestors 'none'`, nosniff, no-referrer) are set in `netlify.toml`.
 - Every data query is parameterised and scoped to the signed-in user. Saves use a revision number, so a stale tab or device can't overwrite newer changes.
 
-Not included yet: password reset, email verification, changing your password, and deleting your account.
+- Deleting your account (sidebar → Delete account) requires your password and removes all of your data.
+
+Not included yet: password reset, email verification and changing your password.
 
 ## How scheduling works
 
