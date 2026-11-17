@@ -1,5 +1,5 @@
 import { useState, type Dispatch } from 'react';
-import type { Card, StudyClass } from '../types';
+import type { Card, Deck, StudyClass } from '../types';
 import { allCards, mastery, ratingBreakdown, studiedCount } from '../scheduler';
 import type { Action } from '../store';
 import type { View } from '../App';
@@ -74,6 +74,93 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
     if (!name) return;
     dispatch({ type: 'addDeck', classId: cls.id, name });
     setNewDeckName('');
+  };
+
+  const groups: { section?: string; decks: Deck[] }[] = [];
+  for (const d of cls.decks) {
+    const g = groups.find((x) => x.section === d.section);
+    if (g) g.decks.push(d);
+    else groups.push({ section: d.section, decks: [d] });
+  }
+  const collapseKey = `recall-collapsed:${cls.id}`;
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(collapseKey) ?? '{}');
+    } catch {
+      return {};
+    }
+  });
+  const toggleGroup = (key: string) =>
+    setCollapsed((c) => {
+      const next = { ...c, [key]: !c[key] };
+      try {
+        localStorage.setItem(collapseKey, JSON.stringify(next));
+      } catch {
+        /* per-browser convenience only */
+      }
+      return next;
+    });
+  const renderDeck = (d: Deck) => {
+    const i = cls.decks.indexOf(d);
+    const checked = cls.selectedDeckIds.includes(d.id);
+    return (
+      <li key={d.id} className={`deck-row ${checked ? '' : 'unchecked'}`}>
+        <label className="check">
+          <input type="checkbox" checked={checked} onChange={() => dispatch({ type: 'toggleDeck', classId: cls.id, deckId: d.id })} />
+        </label>
+        <span className="deck-pct">{Math.round(mastery(d.cards))}%</span>
+        <div className="deck-main">
+          <div className="deck-title">
+            <button
+              className="deck-name"
+              onClick={() => go(d.notes ? { name: 'notes', classId: cls.id, deckId: d.id } : { name: 'edit', classId: cls.id, deckId: d.id })}
+            >
+              {d.name}
+            </button>
+            <span className="muted small">
+              {d.cards.length === 0 ? 'No cards yet' : `${studiedCount(d.cards)} of ${d.cards.length} unique cards studied`}
+            </span>
+          </div>
+          <RatingBar cards={d.cards} />
+        </div>
+        <Menu
+          items={[
+            { label: 'Edit cards', onClick: () => go({ name: 'edit', classId: cls.id, deckId: d.id }) },
+            ...(d.notes ? [{ label: 'Key points', onClick: () => go({ name: 'notes', classId: cls.id, deckId: d.id }) }] : []),
+            ...(d.cards.some((c) => c.mc)
+              ? [{ label: 'Practice quiz', onClick: () => go({ name: 'quiz', classId: cls.id, mode: 'practice', deckIds: [d.id], count: 10, key: Date.now() }) }]
+              : []),
+            ...(d.builtIn ? [] : [{
+              label: 'Rename',
+              onClick: () => {
+                const name = prompt('Deck name', d.name)?.trim();
+                if (name) dispatch({ type: 'renameDeck', classId: cls.id, deckId: d.id, name });
+              },
+            }]),
+            ...(i > 0 && !d.builtIn && !cls.decks[i - 1].builtIn ? [{ label: 'Move up', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: -1 }) }] : []),
+            ...(i < cls.decks.length - 1 && !d.builtIn ? [{ label: 'Move down', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: 1 }) }] : []),
+            { label: 'Reset progress', onClick: () => dispatch({ type: 'resetProgress', classId: cls.id, deckId: d.id }) },
+            ...(d.builtIn
+              ? []
+              : [
+                  {
+                    label: 'Delete deck',
+                    danger: true,
+                    onClick: () => confirm(`Delete deck "${d.name}"?`) && dispatch({ type: 'deleteDeck', classId: cls.id, deckId: d.id }),
+                  },
+                ]),
+          ]}
+        />
+        <button
+          className="play-btn"
+          aria-label={`Study ${d.name}`}
+          disabled={d.cards.length === 0}
+          onClick={() => go({ name: 'study', classId: cls.id, deckIds: [d.id] })}
+        >
+          ▶
+        </button>
+      </li>
+    );
   };
 
   return (
@@ -196,70 +283,56 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
             <span className="muted small">{selectedCards.length} cards selected</span>
           </div>
 
-          <ul className="deck-list">
-            {cls.decks.map((d, i) => {
-              const checked = cls.selectedDeckIds.includes(d.id);
+          {groups.length === 1 && !groups[0].section ? (
+            <ul className="deck-list">{groups[0].decks.map(renderDeck)}</ul>
+          ) : (
+            groups.map((g) => {
+              const key = g.section ?? 'other';
+              const open = !collapsed[key];
+              const ids = g.decks.map((d) => d.id);
+              const gCards = allCards(g.decks);
+              const allOn = ids.every((id) => cls.selectedDeckIds.includes(id));
+              const someOn = ids.some((id) => cls.selectedDeckIds.includes(id));
+              const mcCount = gCards.filter((c) => c.mc).length;
               return (
-                <li key={d.id} className={`deck-row ${checked ? '' : 'unchecked'}`}>
-                  <label className="check">
-                    <input type="checkbox" checked={checked} onChange={() => dispatch({ type: 'toggleDeck', classId: cls.id, deckId: d.id })} />
-                  </label>
-                  <span className="deck-pct">{Math.round(mastery(d.cards))}%</span>
-                  <div className="deck-main">
-                    <div className="deck-title">
-                      {d.section && <span className="deck-section">{d.section}</span>}
-                      <button
-                        className="deck-name"
-                        onClick={() => go(d.notes ? { name: 'notes', classId: cls.id, deckId: d.id } : { name: 'edit', classId: cls.id, deckId: d.id })}
-                      >
-                        {d.name}
-                      </button>
+                <div key={key} className={`section-group ${open ? 'open' : ''}`}>
+                  <div className="section-head">
+                    <label className="check" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={allOn}
+                        ref={(el) => {
+                          if (el) el.indeterminate = someOn && !allOn;
+                        }}
+                        onChange={() => dispatch({ type: 'setDecksSelected', classId: cls.id, deckIds: ids, selected: !allOn })}
+                      />
+                    </label>
+                    <button className="section-toggle" aria-expanded={open} onClick={() => toggleGroup(key)}>
+                      <span className="chev">{open ? '▾' : '▸'}</span>
+                      <span className="section-title">{g.section ?? 'Your decks'}</span>
                       <span className="muted small">
-                        {d.cards.length === 0 ? 'No cards yet' : `${studiedCount(d.cards)} of ${d.cards.length} unique cards studied`}
+                        {g.decks.length} part{g.decks.length === 1 ? '' : 's'} · {mcCount || gCards.length} {mcCount ? 'questions' : 'cards'} · {Math.round(mastery(gCards))}% mastery
                       </span>
+                    </button>
+                    <div className="section-actions">
+                      <button className="btn sm" disabled={!gCards.length} onClick={() => go({ name: 'study', classId: cls.id, deckIds: ids })}>
+                        Study section
+                      </button>
+                      {mcCount > 0 && (
+                        <button
+                          className="btn sm exam"
+                          onClick={() => go({ name: 'quiz', classId: cls.id, mode: 'exam', deckIds: ids, count: 25, key: Date.now() })}
+                        >
+                          25-question quiz
+                        </button>
+                      )}
                     </div>
-                    <RatingBar cards={d.cards} />
                   </div>
-                  <Menu
-                    items={[
-                      { label: 'Edit cards', onClick: () => go({ name: 'edit', classId: cls.id, deckId: d.id }) },
-                      ...(d.notes ? [{ label: 'Key points', onClick: () => go({ name: 'notes', classId: cls.id, deckId: d.id }) }] : []),
-                      ...(d.cards.some((c) => c.mc)
-                        ? [{ label: 'Practice quiz', onClick: () => go({ name: 'quiz', classId: cls.id, mode: 'practice', deckIds: [d.id], count: 10, key: Date.now() }) }]
-                        : []),
-                      ...(d.builtIn ? [] : [{
-                        label: 'Rename',
-                        onClick: () => {
-                          const name = prompt('Deck name', d.name)?.trim();
-                          if (name) dispatch({ type: 'renameDeck', classId: cls.id, deckId: d.id, name });
-                        },
-                      }]),
-                      ...(i > 0 && !d.builtIn && !cls.decks[i - 1].builtIn ? [{ label: 'Move up', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: -1 }) }] : []),
-                      ...(i < cls.decks.length - 1 && !d.builtIn ? [{ label: 'Move down', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: 1 }) }] : []),
-                      { label: 'Reset progress', onClick: () => dispatch({ type: 'resetProgress', classId: cls.id, deckId: d.id }) },
-                      ...(d.builtIn
-                        ? []
-                        : [
-                            {
-                              label: 'Delete deck',
-                              danger: true,
-                              onClick: () => confirm(`Delete deck "${d.name}"?`) && dispatch({ type: 'deleteDeck', classId: cls.id, deckId: d.id }),
-                            },
-                          ]),
-                    ]}
-                  />
-                  <button
-                    className="play-btn"
-                    aria-label={`Study ${d.name}`}
-                    disabled={d.cards.length === 0}
-                    onClick={() => go({ name: 'study', classId: cls.id, deckIds: [d.id] })}
-                  >
-                    ▶
-                  </button>
-                </li>
+                  {open && <ul className="deck-list">{g.decks.map(renderDeck)}</ul>}
+                </div>
               );
-            })}
-          </ul>
+            })
+          )}
 
           <form
             className="add-deck"

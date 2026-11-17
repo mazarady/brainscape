@@ -87,7 +87,7 @@ export default function App({
 
   let main;
   if (view.name === 'class' && activeClass) {
-    main = <ClassView cls={activeClass} dispatch={dispatch} go={go} />;
+    main = <ClassView key={activeClass.id} cls={activeClass} dispatch={dispatch} go={go} />;
   } else if (view.name === 'notes' && activeClass) {
     const deck = activeClass.decks.find((d) => d.id === view.deckId);
     main = deck ? (

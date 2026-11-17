@@ -15,6 +15,7 @@ export type Action =
   | { type: 'moveDeck'; classId: string; deckId: string; dir: -1 | 1 }
   | { type: 'toggleDeck'; classId: string; deckId: string }
   | { type: 'selectAllDecks'; classId: string; selected: boolean }
+  | { type: 'setDecksSelected'; classId: string; deckIds: string[]; selected: boolean }
   | { type: 'setOrder'; classId: string; order: StudyOrder }
   | { type: 'addCards'; classId: string; deckId: string; pairs: [string, string][] }
   | { type: 'updateCard'; classId: string; deckId: string; cardId: string; question: string; answer: string }
@@ -100,6 +101,11 @@ export function reducer(s: AppState, a: Action): AppState {
       }));
     case 'selectAllDecks':
       return mapClass(s, a.classId, (c) => ({ ...c, selectedDeckIds: a.selected ? c.decks.map((d) => d.id) : [] }));
+    case 'setDecksSelected':
+      return mapClass(s, a.classId, (c) => {
+        const rest = c.selectedDeckIds.filter((id) => !a.deckIds.includes(id));
+        return { ...c, selectedDeckIds: a.selected ? [...rest, ...a.deckIds] : rest };
+      });
     case 'setOrder':
       return mapClass(s, a.classId, (c) => ({ ...c, order: a.order }));
     case 'addCards':

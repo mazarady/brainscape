@@ -393,3 +393,19 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
   .fc-options li { font-size: 1rem; }
   .fc-letter { width: 28px; height: 28px; }
 }
+
+/* Collapsible course sections */
+.section-group { border-bottom: 1px solid var(--line); }
+.section-group:last-of-type { border-bottom: none; }
+.section-head { display: flex; align-items: center; gap: 14px; padding: 16px 24px; background: #f9fbfd; flex-wrap: wrap; }
+.section-group.open .section-head { border-bottom: 1px solid var(--line); }
+.section-toggle { flex: 1; min-width: 200px; display: flex; align-items: baseline; gap: 12px; border: none; background: none; padding: 0; text-align: left; flex-wrap: wrap; }
+.chev { width: 14px; color: var(--muted); }
+.section-title { font-weight: 800; font-size: 1.1rem; color: var(--navy); }
+.section-actions { display: flex; gap: 8px; }
+.section-group .deck-row { padding-left: 52px; }
+@media (max-width: 860px) {
+  .section-head { padding: 14px 16px; }
+  .section-actions { width: 100%; padding-left: 34px; }
+  .section-group .deck-row { padding-left: 16px; }
+}
