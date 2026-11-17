@@ -26,9 +26,9 @@ export async function getMe(): Promise<User | null> {
   return r.data.user;
 }
 
-export async function authenticate(mode: 'login' | 'signup', email: string, password: string): Promise<{ user?: User; error?: string }> {
+export async function signIn(email: string): Promise<{ user?: User; error?: string }> {
   try {
-    const r = await request<{ user?: User; error?: string }>('POST', `/api/auth/${mode}`, { email, password });
+    const r = await request<{ user?: User; error?: string }>('POST', '/api/auth/email', { email });
     return r.data.user ? { user: r.data.user } : { error: r.data.error ?? 'Something went wrong.' };
   } catch {
     return { error: 'Could not reach the server. Check your connection.' };
@@ -60,9 +60,9 @@ export async function saveData(data: AppState, rev: number): Promise<SaveResult>
   }
 }
 
-export async function deleteAccount(password: string): Promise<{ error?: string }> {
+export async function deleteAccount(email: string): Promise<{ error?: string }> {
   try {
-    const r = await request<{ ok?: boolean; error?: string }>('POST', '/api/auth/delete-account', { password });
+    const r = await request<{ ok?: boolean; error?: string }>('POST', '/api/auth/delete-account', { email });
     return r.data.ok ? {} : { error: r.data.error ?? 'Could not delete your account.' };
   } catch {
     return { error: 'Could not reach the server. Check your connection.' };

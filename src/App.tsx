@@ -40,7 +40,7 @@ export default function App({
   onLogout: () => void;
   onDeleted: () => void;
 }) {
-  const [state, dispatch, saveStatus] = useAppStore(initialState, initialRev);
+  const [state, dispatch, saveStatus, saveNow] = useAppStore(initialState, initialRev);
   const banner = STATUS_MESSAGES[saveStatus] && (
     <div className="save-banner" role="alert">
       <span>{STATUS_MESSAGES[saveStatus]}</span>
@@ -125,7 +125,9 @@ export default function App({
         dispatch={dispatch}
         user={user}
         saveStatus={saveStatus}
-        onLogout={onLogout}
+        onLogout={async () => {
+          if ((await saveNow()) || confirm('Some changes couldn’t be saved. Sign out anyway?')) onLogout();
+        }}
         onDeleted={onDeleted}
         onSelect={(id) => go({ name: 'class', classId: id })}
         onCreate={() => setCreatingClass(true)}

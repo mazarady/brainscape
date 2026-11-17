@@ -11,7 +11,7 @@ A flashcard study app built around **confidence-based repetition**: after reveal
 - **Progressive** (new cards in deck order) or **random** order
 - Deck editor: add, edit, search and delete cards, plus **bulk import** (tab, ` :: ` or ` | ` separated)
 - Keyboard shortcuts while studying: `Space`/`Enter` to reveal, `1`–`5` to rate, `Esc` to leave
-- **Accounts**: email + password sign-in; your flashcards are saved to your account in Netlify Database (Postgres) and follow you across devices
+- **Accounts**: sign in with just your email; your flashcards are saved to your account in Netlify Database (Postgres) and follow you across devices
 - Export/import a JSON backup from the sidebar
 - Works on phones
 
@@ -30,19 +30,18 @@ Deploys build with `npm run build` and publish `dist/` (see `netlify.toml`). The
 
 `npm test` runs the scheduler tests and the API tests (against an in-process Postgres via PGlite, so no database is needed).
 
-## Security
+## Sign-in and security
 
-- Passwords are hashed with **scrypt** (N=2^17, r=8, p=1, random 16-byte salt per user); plaintext is never stored or logged.
-- Sessions are random 256-bit tokens in an **HttpOnly, SameSite=Lax, Secure** cookie (`__Host-` prefixed on HTTPS). Only a SHA-256 hash of the token is stored, so a database leak can't be used to hijack sessions. Sessions last 30 days (sliding) and are deleted on sign-out.
-- Login always runs a full password hash, even for unknown emails, and returns one generic error, so it doesn't reveal which emails have accounts. Signup does say when an email is already registered.
-- **Rate limiting** (stored in the database so it works across serverless instances): 30 auth attempts per IP and 8 failed logins per email every 15 minutes.
-- **CSRF**: state-changing requests must be `application/json` and same-origin (`Origin` checked); cookies are SameSite=Lax.
+Sign-in is **email only — no password and no verification**. Typing an email creates the account the first time and signs back into it after that. This is deliberately simple, so **anyone who knows (or guesses) an email address can open that account**. Don't store anything private in it. To make it secure later, add a one-time code sent by email.
+
+What is still in place:
+
+- Sessions are random 256-bit tokens in an **HttpOnly, SameSite=Lax, Secure** cookie (`__Host-` prefixed on HTTPS). Only a SHA-256 hash of the token is stored. Sessions last 30 days (sliding) and are deleted on sign-out.
+- **Rate limiting** (stored in the database so it works across serverless instances): 30 sign-ins per IP every 15 minutes.
+- **CSRF**: state-changing requests must be `application/json` and same-origin (`Origin` checked).
 - Strict security headers (CSP, HSTS, `frame-ancestors 'none'`, nosniff, no-referrer) are set in `netlify.toml`.
-- Every data query is parameterised and scoped to the signed-in user. Saves use a revision number, so a stale tab or device can't overwrite newer changes.
-
-- Deleting your account (sidebar → Delete account) requires your password and removes all of your data.
-
-Not included yet: password reset, email verification and changing your password.
+- Every data query is parameterised and scoped to the signed-in account. Saves use a revision number, so a stale tab or device can't overwrite newer changes.
+- Deleting an account (sidebar → Delete account) asks you to type the email again, then removes the account and all of its data.
 
 ## How scheduling works
 
