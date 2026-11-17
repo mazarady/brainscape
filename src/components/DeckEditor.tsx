@@ -55,7 +55,7 @@ function CardRow({ card, n, onSave, onDelete }: { card: Card; n: number; onSave:
     );
   }
   return (
-    <li className="card-row" onDoubleClick={() => setEditing(true)}>
+    <li className="card-row" onDoubleClick={() => !card.builtIn && setEditing(true)}>
       <span className="card-n">{n}</span>
       <div className="card-q">{card.question}</div>
       <div className="card-a">{card.answer}</div>
@@ -63,8 +63,12 @@ function CardRow({ card, n, onSave, onDelete }: { card: Card; n: number; onSave:
         <span className="chip" style={{ background: RATING_COLORS[card.rating] }} title={card.rating ? `Confidence ${card.rating}` : 'Not studied'}>
           {card.rating || '–'}
         </span>
-        <button className="icon-btn" aria-label="Edit" onClick={() => setEditing(true)}>✎</button>
-        <button className="icon-btn" aria-label="Delete" onClick={() => confirm('Delete this card?') && onDelete()}>🗑</button>
+        {!card.builtIn && (
+          <>
+            <button className="icon-btn" aria-label="Edit" onClick={() => setEditing(true)}>✎</button>
+            <button className="icon-btn" aria-label="Delete" onClick={() => confirm('Delete this card?') && onDelete()}>🗑</button>
+          </>
+        )}
       </div>
     </li>
   );

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { saveData } from './api';
-import type { AppState, Card, Deck, Rating, StudyClass, StudyOrder } from './types';
+import type { AppState, Card, Deck, QuizResult, Rating, StudyClass, StudyOrder } from './types';
 import { rateCard } from './scheduler';
 import { newCard, newClass, newDeck } from './seed';
 
@@ -21,7 +21,9 @@ export type Action =
   | { type: 'deleteCard'; classId: string; deckId: string; cardId: string }
   | { type: 'rate'; classId: string; deckId: string; cardId: string; rating: Exclude<Rating, 0> }
   | { type: 'addStudyTime'; classId: string; seconds: number }
-  | { type: 'resetProgress'; classId: string; deckId?: string };
+  | { type: 'resetProgress'; classId: string; deckId?: string }
+  | { type: 'quizAnswer'; classId: string; deckId: string; cardId: string; correct: boolean }
+  | { type: 'recordQuiz'; classId: string; result: QuizResult };
 
 const mapClass = (s: AppState, id: string, fn: (c: StudyClass) => StudyClass): AppState => ({
   ...s,
@@ -38,12 +40,25 @@ const mapCard = (d: Deck, id: string, fn: (c: Card) => Card): Deck => ({
   cards: d.cards.map((c) => (c.id === id ? fn(c) : c)),
 });
 
-const resetCard = (c: Card): Card => ({ ...c, rating: 0, dueStep: 0, timesSeen: 0, lastStudiedAt: undefined });
+const resetCard = (c: Card): Card => ({ ...c, rating: 0, dueStep: 0, timesSeen: 0, lastStudiedAt: undefined, quizSeen: 0, quizCorrect: 0, quizLastWrong: false });
 
 export function reducer(s: AppState, a: Action): AppState {
   switch (a.type) {
     case 'replace':
       return a.state;
+    case 'quizAnswer':
+      return mapClass(s, a.classId, (c) =>
+        mapDeck(c, a.deckId, (d) =>
+          mapCard(d, a.cardId, (card) => ({
+            ...card,
+            quizSeen: (card.quizSeen ?? 0) + 1,
+            quizCorrect: (card.quizCorrect ?? 0) + (a.correct ? 1 : 0),
+            quizLastWrong: !a.correct,
+          })),
+        ),
+      );
+    case 'recordQuiz':
+      return mapClass(s, a.classId, (c) => ({ ...c, quizHistory: [...(c.quizHistory ?? []), a.result].slice(-100) }));
     case 'addClass': {
       const c = newClass(a.name, [], a.icon, a.color);
       c.id = a.id;

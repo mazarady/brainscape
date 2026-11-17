@@ -8,13 +8,17 @@ import StudyView from './components/StudyView';
 import DeckEditor from './components/DeckEditor';
 import ClassForm from './components/ClassForm';
 import Modal from './components/Modal';
+import QuizView from './components/QuizView';
+import NotesView from './components/NotesView';
 import { uid } from './seed';
 
 export type View =
   | { name: 'home' }
   | { name: 'class'; classId: string }
   | { name: 'study'; classId: string; deckIds?: string[] }
-  | { name: 'edit'; classId: string; deckId: string };
+  | { name: 'edit'; classId: string; deckId: string }
+  | { name: 'notes'; classId: string; deckId: string }
+  | { name: 'quiz'; classId: string; mode: 'practice' | 'exam'; deckIds: string[]; count: number; key: number };
 
 const STATUS_MESSAGES: Partial<Record<SaveStatus, string>> = {
   conflict: 'Your flashcards were changed in another tab or device, so recent changes here weren’t saved. Reload to get the latest version.',
@@ -55,6 +59,23 @@ export default function App({
     setMenuOpen(false);
   };
 
+  if (view.name === 'quiz' && activeClass) {
+    return (
+      <>
+        {banner}
+        <QuizView
+          key={view.key}
+          cls={activeClass}
+          deckIds={view.deckIds}
+          mode={view.mode}
+          count={view.count}
+          dispatch={dispatch}
+          onExit={() => go({ name: 'class', classId: activeClass.id })}
+        />
+      </>
+    );
+  }
+
   if (view.name === 'study' && activeClass) {
     return (
       <>
@@ -67,6 +88,17 @@ export default function App({
   let main;
   if (view.name === 'class' && activeClass) {
     main = <ClassView cls={activeClass} dispatch={dispatch} go={go} />;
+  } else if (view.name === 'notes' && activeClass) {
+    const deck = activeClass.decks.find((d) => d.id === view.deckId);
+    main = deck ? (
+      <NotesView
+        cls={activeClass}
+        deck={deck}
+        onBack={() => go({ name: 'class', classId: activeClass.id })}
+        onFlashcards={() => go({ name: 'study', classId: activeClass.id, deckIds: [deck.id] })}
+        onPractice={() => go({ name: 'quiz', classId: activeClass.id, mode: 'practice', deckIds: [deck.id], count: 10, key: Date.now() })}
+      />
+    ) : null;
   } else if (view.name === 'edit' && activeClass) {
     const deck = activeClass.decks.find((d) => d.id === view.deckId);
     main = deck ? (

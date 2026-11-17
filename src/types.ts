@@ -9,12 +9,23 @@ export interface Card {
   dueStep: number;
   timesSeen: number;
   lastStudiedAt?: number;
+  /** Multiple-choice data for built-in course questions. */
+  mc?: { options: string[]; correct: number[]; explain: string };
+  /** Card comes from a built-in course and is kept in sync with it. */
+  builtIn?: boolean;
+  quizSeen?: number;
+  quizCorrect?: number;
+  /** Whether the most recent quiz attempt was wrong. */
+  quizLastWrong?: boolean;
 }
 
 export interface Deck {
   id: string;
   name: string;
   cards: Card[];
+  builtIn?: boolean;
+  section?: string;
+  notes?: { heading: string; points: string[] }[];
 }
 
 export type StudyOrder = 'progressive' | 'random';
@@ -32,6 +43,17 @@ export interface StudyClass {
   /** Monotonic counter of cards reviewed in this class; drives scheduling. */
   step: number;
   totalStudySeconds: number;
+  /** Set when this class mirrors a built-in course. */
+  courseId?: string;
+  quizHistory?: QuizResult[];
+}
+
+export interface QuizResult {
+  at: number;
+  mode: 'practice' | 'exam';
+  correct: number;
+  total: number;
+  deckIds: string[];
 }
 
 export interface AppState {

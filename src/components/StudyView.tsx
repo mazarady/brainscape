@@ -242,7 +242,7 @@ export default function StudyView({
                     Last: {RATING_LABELS[entry.card.rating]}
                   </span>
                 )}
-                <button
+                {!entry.card.builtIn && <button
                   className="icon-btn light"
                   aria-label="Edit card"
                   onClick={() => {
@@ -251,7 +251,7 @@ export default function StudyView({
                   }}
                 >
                   ✎
-                </button>
+                </button>}
               </div>
               <div className="face question">
                 <span className="face-tag">Q</span>

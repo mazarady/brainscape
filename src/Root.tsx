@@ -4,6 +4,7 @@ import AuthScreen from './components/AuthScreen';
 import { getMe, loadData, logout, saveData, type User } from './api';
 import { emptyState } from './seed';
 import { isValidState } from './store';
+import { syncAllCourses } from './course';
 import type { AppState } from './types';
 
 type Phase =
@@ -11,6 +12,7 @@ type Phase =
   | { name: 'error'; message: string }
   | { name: 'signed-out' }
   | { name: 'ready'; user: User; data: AppState; rev: number };
+
 
 // Earlier versions kept data in this browser only. Carry it over on first sign-in,
 // leaving out the sample classes that used to be pre-loaded.
@@ -78,7 +80,7 @@ export default function Root() {
     <App
       key={phase.user.email}
       user={phase.user}
-      initialState={phase.data}
+      initialState={syncAllCourses(phase.data)}
       initialRev={phase.rev}
       onLogout={async () => {
         await logout();

@@ -60,6 +60,14 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
   const selectedCards = allCards(cls.decks.filter((d) => cls.selectedDeckIds.includes(d.id)));
   const allSelected = cls.decks.length > 0 && cls.selectedDeckIds.length === cls.decks.length;
   const breakdown = ratingBreakdown(cards);
+  const isCourse = !!cls.courseId;
+  const quizCards = selectedCards.filter((c) => c.mc);
+  const mastered = quizCards.filter((c) => (c.quizSeen ?? 0) > 0 && !c.quizLastWrong).length;
+  const exams = (cls.quizHistory ?? []).filter((r) => r.mode === 'exam' && r.total > 0);
+  const lastExam = exams[exams.length - 1];
+  const bestExam = exams.length ? Math.max(...exams.map((r) => Math.round((r.correct / r.total) * 100))) : null;
+  const seenQ = quizCards.reduce((n, c) => n + (c.quizSeen ?? 0), 0);
+  const practiceAcc = seenQ ? Math.round((quizCards.reduce((n, c) => n + (c.quizCorrect ?? 0), 0) / seenQ) * 100) : null;
 
   const addDeck = () => {
     const name = newDeckName.trim();
@@ -85,7 +93,7 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
               disabled={selectedCards.length === 0}
               onClick={() => go({ name: 'study', classId: cls.id })}
             >
-              Study <span className="play">▶</span>
+              {isCourse ? 'Flashcards' : 'Study'} <span className="play">▶</span>
             </button>
             <Menu
               items={[
@@ -94,17 +102,62 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
                   label: 'Reset all progress',
                   onClick: () => confirm('Reset confidence ratings for every card in this class?') && dispatch({ type: 'resetProgress', classId: cls.id }),
                 },
-                {
-                  label: 'Delete class',
-                  danger: true,
-                  onClick: () => confirm(`Delete "${cls.name}" and all its decks?`) && dispatch({ type: 'deleteClass', classId: cls.id }),
-                },
+                ...(isCourse
+                  ? []
+                  : [
+                      {
+                        label: 'Delete class',
+                        danger: true,
+                        onClick: () => confirm(`Delete "${cls.name}" and all its decks?`) && dispatch({ type: 'deleteClass', classId: cls.id }),
+                      },
+                    ]),
               ]}
             />
           </div>
         </div>
         <MasteryRing value={mastery(cards)} />
       </header>
+
+      {isCourse && (
+        <section className="exam-prep">
+          <div className="exam-prep-main">
+            <h2>Exam prep</h2>
+            <p className="muted small">
+              {quizCards.length} multiple-choice questions in the selected sections · {mastered} answered correctly on their last try
+            </p>
+            <div className="exam-buttons">
+              <button
+                className="btn primary"
+                disabled={!quizCards.length}
+                onClick={() => go({ name: 'quiz', classId: cls.id, mode: 'practice', deckIds: cls.selectedDeckIds, count: 10, key: Date.now() })}
+              >
+                Practice quiz · 10 questions
+              </button>
+              <button
+                className="btn exam"
+                disabled={!quizCards.length}
+                onClick={() => go({ name: 'quiz', classId: cls.id, mode: 'exam', deckIds: cls.selectedDeckIds, count: 25, key: Date.now() })}
+              >
+                Mock exam · 25 questions
+              </button>
+            </div>
+          </div>
+          <div className="exam-stats">
+            <div>
+              <span className="stat-label">Last mock exam</span>
+              <strong>{lastExam ? `${Math.round((lastExam.correct / lastExam.total) * 100)}%` : '—'}</strong>
+            </div>
+            <div>
+              <span className="stat-label">Best mock exam</span>
+              <strong>{bestExam !== null ? `${bestExam}%` : '—'}</strong>
+            </div>
+            <div>
+              <span className="stat-label">Practice accuracy</span>
+              <strong>{practiceAcc !== null ? `${practiceAcc}%` : '—'}</strong>
+            </div>
+          </div>
+        </section>
+      )}
 
       <nav className="tabs">
         <button className={tab === 'about' ? 'on' : ''} onClick={() => setTab('about')}>About</button>
@@ -154,7 +207,13 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
                   <span className="deck-pct">{Math.round(mastery(d.cards))}%</span>
                   <div className="deck-main">
                     <div className="deck-title">
-                      <button className="deck-name" onClick={() => go({ name: 'edit', classId: cls.id, deckId: d.id })}>{d.name}</button>
+                      {d.section && <span className="deck-section">{d.section}</span>}
+                      <button
+                        className="deck-name"
+                        onClick={() => go(d.notes ? { name: 'notes', classId: cls.id, deckId: d.id } : { name: 'edit', classId: cls.id, deckId: d.id })}
+                      >
+                        {d.name}
+                      </button>
                       <span className="muted small">
                         {d.cards.length === 0 ? 'No cards yet' : `${studiedCount(d.cards)} of ${d.cards.length} unique cards studied`}
                       </span>
@@ -164,21 +223,29 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
                   <Menu
                     items={[
                       { label: 'Edit cards', onClick: () => go({ name: 'edit', classId: cls.id, deckId: d.id }) },
-                      {
+                      ...(d.notes ? [{ label: 'Key points', onClick: () => go({ name: 'notes', classId: cls.id, deckId: d.id }) }] : []),
+                      ...(d.cards.some((c) => c.mc)
+                        ? [{ label: 'Practice quiz', onClick: () => go({ name: 'quiz', classId: cls.id, mode: 'practice', deckIds: [d.id], count: 10, key: Date.now() }) }]
+                        : []),
+                      ...(d.builtIn ? [] : [{
                         label: 'Rename',
                         onClick: () => {
                           const name = prompt('Deck name', d.name)?.trim();
                           if (name) dispatch({ type: 'renameDeck', classId: cls.id, deckId: d.id, name });
                         },
-                      },
-                      ...(i > 0 ? [{ label: 'Move up', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: -1 }) }] : []),
-                      ...(i < cls.decks.length - 1 ? [{ label: 'Move down', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: 1 }) }] : []),
+                      }]),
+                      ...(i > 0 && !d.builtIn && !cls.decks[i - 1].builtIn ? [{ label: 'Move up', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: -1 }) }] : []),
+                      ...(i < cls.decks.length - 1 && !d.builtIn ? [{ label: 'Move down', onClick: () => dispatch({ type: 'moveDeck', classId: cls.id, deckId: d.id, dir: 1 }) }] : []),
                       { label: 'Reset progress', onClick: () => dispatch({ type: 'resetProgress', classId: cls.id, deckId: d.id }) },
-                      {
-                        label: 'Delete deck',
-                        danger: true,
-                        onClick: () => confirm(`Delete deck "${d.name}"?`) && dispatch({ type: 'deleteDeck', classId: cls.id, deckId: d.id }),
-                      },
+                      ...(d.builtIn
+                        ? []
+                        : [
+                            {
+                              label: 'Delete deck',
+                              danger: true,
+                              onClick: () => confirm(`Delete deck "${d.name}"?`) && dispatch({ type: 'deleteDeck', classId: cls.id, deckId: d.id }),
+                            },
+                          ]),
                     ]}
                   />
                   <button
