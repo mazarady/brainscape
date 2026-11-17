@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch } from 'react';
 import type { StudyClass } from '../types';
 import type { Action } from '../store';
-import { buildExam, buildPractice, isCorrect, type QuizItem } from '../quiz';
+import { buildExam, buildPractice, isCorrect, LETTERS, type QuizItem } from '../quiz';
 
-const LETTERS = 'ABCDEFGH';
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 export default function QuizView({

@@ -4,6 +4,7 @@ import { allCards, mastery, pickNext, studyPool } from '../scheduler';
 import type { Action } from '../store';
 import { MasteryRing, RATING_COLORS, RatingBar } from './ClassView';
 import Modal from './Modal';
+import { flashcardOrder, LETTERS } from '../quiz';
 
 const ROUND_SIZE = 10;
 const RATING_LABELS = ['', 'Not at all', 'Barely', 'Somewhat', 'Mostly', 'Perfectly'];
@@ -145,6 +146,13 @@ export default function StudyView({
   }, []);
 
   const deck = entry && cls.decks.find((d) => d.id === entry.deckId);
+  const mcOrder = entry?.card.mc ? flashcardOrder(entry.card) : null;
+  const mcLetters = mcOrder
+    ? mcOrder
+        .map((opt, pos) => (entry!.card.mc!.correct.includes(opt) ? LETTERS[pos] : ''))
+        .filter(Boolean)
+        .join(', ')
+    : '';
   const cardIndex = deck && entry ? deck.cards.findIndex((c) => c.id === entry.card.id) + 1 : 0;
   const scopedCards = allCards(scoped.decks.filter((d) => scoped.selectedDeckIds.includes(d.id)));
 
@@ -255,14 +263,31 @@ export default function StudyView({
               </div>
               <div className="face question">
                 <span className="face-tag">Q</span>
-                <div className="face-text">{entry.card.question}</div>
-              </div>
-              {revealed && (
-                <div className="face answer">
-                  <span className="face-tag">A</span>
-                  <div className={`face-text ${entry.card.answer.length < 20 ? 'big' : ''}`}>{entry.card.answer}</div>
+                <div className="face-body">
+                  <div className="face-text">{entry.card.question}</div>
+                  {mcOrder && (
+                    <ol className="fc-options">
+                      {mcOrder.map((opt, pos) => (
+                        <li key={opt} className={revealed && entry.card.mc!.correct.includes(opt) ? 'right' : ''}>
+                          <span className="fc-letter">{LETTERS[pos]}</span>
+                          <span>{entry.card.mc!.options[opt]}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                 </div>
-              )}
+              </div>
+              {revealed &&
+                (mcOrder ? (
+                  <div className="face answer">
+                    <div className="face-text big">{mcLetters}</div>
+                  </div>
+                ) : (
+                  <div className="face answer">
+                    <span className="face-tag">A</span>
+                    <div className={`face-text ${entry.card.answer.length < 20 ? 'big' : ''}`}>{entry.card.answer}</div>
+                  </div>
+                ))}
             </div>
             <div className="study-controls">
               {!revealed ? (

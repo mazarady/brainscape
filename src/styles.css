@@ -381,3 +381,15 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
   .quiz-q { font-size: 1.2rem; }
   .exam-stats { width: 100%; justify-content: space-around; }
 }
+
+/* Multiple-choice flashcards */
+.face-body { flex: 1; min-width: 0; }
+.fc-options { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 10px; }
+.fc-options li { display: flex; align-items: center; gap: 14px; font-size: 1.2rem; line-height: 1.4; padding: 6px 10px; border-radius: 10px; }
+.fc-options li.right { background: #f0f9ea; }
+.fc-letter { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; background: #eef1f5; color: var(--navy); font-weight: 700; display: grid; place-items: center; font-size: 0.95rem; }
+.fc-options li.right .fc-letter { background: #6fbf3b; color: #fff; }
+@media (max-width: 860px) {
+  .fc-options li { font-size: 1rem; }
+  .fc-letter { width: 28px; height: 28px; }
+}
