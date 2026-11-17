@@ -1,4 +1,5 @@
 import { useRef, useState, type Dispatch } from 'react';
+import Icon from './Icon';
 import Modal from './Modal';
 import type { AppState } from '../types';
 import { allCards, mastery } from '../scheduler';
@@ -75,7 +76,7 @@ export default function Sidebar({
         })}
       </ul>
       <button className="add-class" onClick={onCreate}>
-        <span className="plus">+</span> Add new class
+        <span className="plus"><Icon name="plus" size={18} /></span> Add new class
       </button>
       <div className="account">
         <div className="account-email" title={user.email}>{user.email}</div>

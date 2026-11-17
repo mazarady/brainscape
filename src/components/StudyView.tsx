@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
+import Icon from './Icon';
 import type { Rating, StudyClass } from '../types';
 import { allCards, mastery, pickNext, studyPool } from '../scheduler';
 import type { Action } from '../store';
@@ -219,7 +220,7 @@ export default function StudyView({
             <div className="summary-chips">
               {[1, 2, 3, 4, 5].map((r) => (
                 <div key={r} className="summary-chip">
-                  <span className="chip" style={{ background: RATING_COLORS[r] }}>{r}</span>
+                  <span className="chip" style={{ background: RATING_COLORS[r] }}><span className="glyph">{r}</span></span>
                   <span>{roundRatings.filter((x) => x === r).length}</span>
                 </div>
               ))}
@@ -258,7 +259,7 @@ export default function StudyView({
                     setEditing(true);
                   }}
                 >
-                  ✎
+                  <Icon name="edit" />
                 </button>}
               </div>
               <div className="face question">
@@ -269,7 +270,7 @@ export default function StudyView({
                     <ol className="fc-options">
                       {mcOrder.map((opt, pos) => (
                         <li key={opt} className={revealed && entry.card.mc!.correct.includes(opt) ? 'right' : ''}>
-                          <span className="fc-letter">{LETTERS[pos]}</span>
+                          <span className="fc-letter"><span className="glyph">{LETTERS[pos]}</span></span>
                           <span>{entry.card.mc!.options[opt]}</span>
                         </li>
                       ))}
@@ -300,7 +301,7 @@ export default function StudyView({
                   <div className="rate-buttons">
                     {([1, 2, 3, 4, 5] as const).map((r) => (
                       <button key={r} className="rate-btn" style={{ background: RATING_COLORS[r] }} onClick={() => rate(r)} aria-label={`${r} – ${RATING_LABELS[r]}`}>
-                        {r}
+                        <span className="glyph">{r}</span>
                       </button>
                     ))}
                   </div>

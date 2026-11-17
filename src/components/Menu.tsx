@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Icon from './Icon';
 
 export interface MenuItem {
   label: string;
@@ -17,7 +18,7 @@ export default function Menu({ items }: { items: MenuItem[] }) {
   }, [open]);
   return (
     <div className="menu" ref={ref}>
-      <button className="icon-btn dots" aria-label="More options" onClick={() => setOpen((o) => !o)}>•••</button>
+      <button className="icon-btn dots" aria-label="More options" onClick={() => setOpen((o) => !o)}><Icon name="more" /></button>
       {open && (
         <div className="menu-pop">
           {items.map((it) => (
