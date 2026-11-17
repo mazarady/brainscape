@@ -188,9 +188,29 @@ export function useAppStore(initial: AppState, initialRev: number) {
 
   useEffect(() => {
     if (state === saved.current || stopped.current) return;
+    // Show "Saving…" straight away, not only once the debounced save starts.
+    setStatus((st) => (st === 'saved' ? 'saving' : st));
     clearTimeout(timer.current);
     timer.current = setTimeout(flush, SAVE_DELAY_MS);
   }, [state, flush]);
+
+  /** Save any pending changes now (e.g. before signing out). Resolves true once everything is saved. */
+  const saveNow = useCallback(async () => {
+    clearTimeout(timer.current);
+    for (let i = 0; i < 50; i++) {
+      if (latest.current === saved.current) return true;
+      if (stopped.current) return false;
+      if (inFlight.current) await new Promise((r) => setTimeout(r, 100));
+      else {
+        await flush();
+        if (latest.current !== saved.current && !inFlight.current) {
+          clearTimeout(timer.current);
+          if (!stopped.current) return false; // offline — couldn't save
+        }
+      }
+    }
+    return latest.current === saved.current;
+  }, [flush]);
 
   // Warn before closing the tab with unsaved changes, and try one last save.
   useEffect(() => {
@@ -204,5 +224,5 @@ export function useAppStore(initial: AppState, initialRev: number) {
     return () => window.removeEventListener('beforeunload', onUnload);
   }, [flush]);
 
-  return [state, dispatch, status] as const;
+  return [state, dispatch, status, saveNow] as const;
 }

@@ -28,7 +28,7 @@ export default function Sidebar({
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [deleting, setDeleting] = useState(false);
-  const [password, setPassword] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -84,7 +84,7 @@ export default function Sidebar({
         </div>
         <button
           className="link-btn"
-          onClick={() => (saveStatus === 'saved' || confirm('Some changes haven’t been saved yet. Sign out anyway?')) && onLogout()}
+          onClick={onLogout}
         >
           Sign out
         </button>
@@ -97,7 +97,7 @@ export default function Sidebar({
             onSubmit={async (e) => {
               e.preventDefault();
               setBusy(true);
-              const r = await deleteAccount(password);
+              const r = await deleteAccount(confirmEmail);
               setBusy(false);
               if (r.error) setError(r.error);
               else onDeleted();
@@ -108,13 +108,13 @@ export default function Sidebar({
               Consider exporting a backup first.
             </p>
             <label>
-              Enter your password to confirm
-              <input type="password" autoComplete="current-password" autoFocus required value={password} onChange={(e) => setPassword(e.target.value)} />
+              Type your email to confirm
+              <input type="email" autoComplete="off" autoFocus required value={confirmEmail} onChange={(e) => setConfirmEmail(e.target.value)} placeholder={user.email} />
             </label>
             {error && <div className="auth-error" role="alert">{error}</div>}
             <div className="form-actions">
               <button type="button" className="btn" onClick={() => setDeleting(false)}>Cancel</button>
-              <button type="submit" className="btn danger" disabled={busy || !password}>{busy ? 'Deleting…' : 'Delete account'}</button>
+              <button type="submit" className="btn danger" disabled={busy || confirmEmail.trim().toLowerCase() !== user.email}>{busy ? 'Deleting…' : 'Delete account'}</button>
             </div>
           </form>
         </Modal>

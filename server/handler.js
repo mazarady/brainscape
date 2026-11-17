@@ -1,4 +1,4 @@
-import { hashPassword, newSessionToken, normalizeEmail, sha256, validateSignup, verifyPassword } from './auth.js';
+import { newSessionToken, normalizeEmail, sha256, validateEmail } from './auth.js';
 import { SCHEMA } from './schema.js';
 
 const SESSION_TTL_S = 30 * 24 * 60 * 60; // 30 days
@@ -6,15 +6,14 @@ const SESSION_REFRESH_S = 24 * 60 * 60; // extend sliding expiry at most once a 
 const MAX_BODY_BYTES = 5 * 1024 * 1024;
 const LIMITS = {
   ip: { max: 30, windowS: 15 * 60 },
-  email: { max: 8, windowS: 15 * 60 },
 };
 
 /**
  * @typedef {{ query: (text: string, params?: unknown[]) => Promise<{ rows: any[] }>, connect?: () => Promise<any> }} Db  (a pg-compatible Pool)
- * @param {{ db: Db, passwordCost?: { N: number, r: number, p: number } }} opts
+ * @param {{ db: Db }} opts
  * @returns {(req: Request, ctx?: { ip?: string }) => Promise<Response>}
  */
-export function createHandler({ db, passwordCost }) {
+export function createHandler({ db }) {
   let ready;
   const ensureSchema = () =>
     (ready ??= (async () => {
@@ -35,8 +34,6 @@ export function createHandler({ db, passwordCost }) {
       }
     })());
 
-  let dummyHash;
-  const getDummyHash = async () => (dummyHash ??= await hashPassword('timing-equaliser-' + Math.random(), passwordCost));
 
   // ---------- helpers ----------
   const json = (status, body, headers = {}) =>
@@ -158,44 +155,24 @@ export function createHandler({ db, passwordCost }) {
         return withRefresh(json(200, { user: session ? { email: session.email } : null }));
       }
 
-      if (path === '/api/auth/signup' && method === 'POST') {
+      // Email-only sign-in: no password and no verification. Typing an email
+      // creates the account the first time and signs straight back into it after.
+      if (path === '/api/auth/email' && method === 'POST') {
         const wait = await rateLimit(`ip:${ip}`, LIMITS.ip);
         if (wait) return json(429, { error: 'Too many attempts. Try again later.' }, { 'retry-after': String(wait) });
         const { body, tooLarge, malformed } = await readJson(req);
         if (tooLarge || malformed) return json(400, { error: 'Invalid request.' });
-        const v = validateSignup(body);
+        const v = validateEmail(body);
         if (v.error) return json(400, { error: v.error });
-        const hash = await hashPassword(v.password, passwordCost);
         const { rows } = await db.query(
-          `INSERT INTO users (email, password_hash) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING RETURNING id`,
-          [v.email, hash],
+          `INSERT INTO users (email, password_hash) VALUES ($1, '') ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
+           RETURNING id, (xmax = 0) AS created`,
+          [v.email],
         );
-        if (!rows[0]) return json(409, { error: 'An account with that email already exists. Try signing in.' });
+        // Drop any session this browser already had and issue a fresh token.
         if (session) await db.query(`DELETE FROM sessions WHERE token_hash = $1`, [session.hash]);
         const cookie = await startSession(rows[0].id, secure);
-        return json(201, { user: { email: v.email } }, { 'set-cookie': cookie });
-      }
-
-      if (path === '/api/auth/login' && method === 'POST') {
-        const { body, tooLarge, malformed } = await readJson(req);
-        if (tooLarge || malformed) return json(400, { error: 'Invalid request.' });
-        const email = normalizeEmail(body?.email);
-        const password = typeof body?.password === 'string' ? body.password : '';
-        const wait = (await rateLimit(`ip:${ip}`, LIMITS.ip)) || (await rateLimit(`email:${email}`, LIMITS.email));
-        if (wait) return json(429, { error: 'Too many attempts. Try again later.' }, { 'retry-after': String(wait) });
-        const { rows } =
-          email && password.length <= 256
-            ? await db.query(`SELECT id, email, password_hash FROM users WHERE email = $1`, [email])
-            : { rows: [] };
-        const user = rows[0];
-        // Always run a full hash so response time doesn't reveal whether the email exists.
-        const ok = await verifyPassword(password, user ? user.password_hash : await getDummyHash());
-        if (!user || !ok) return json(401, { error: 'Incorrect email or password.' });
-        await db.query(`DELETE FROM rate_limits WHERE key = $1`, [`email:${email}`]);
-        // Drop any session this browser already had and issue a fresh token (prevents session fixation).
-        if (session) await db.query(`DELETE FROM sessions WHERE token_hash = $1`, [session.hash]);
-        const cookie = await startSession(user.id, secure);
-        return json(200, { user: { email: user.email } }, { 'set-cookie': cookie });
+        return json(rows[0].created ? 201 : 200, { user: { email: v.email } }, { 'set-cookie': cookie });
       }
 
       if (path === '/api/auth/logout' && method === 'POST') {
@@ -205,19 +182,12 @@ export function createHandler({ db, passwordCost }) {
 
       if (path === '/api/auth/delete-account' && method === 'POST') {
         if (!session) return json(401, { error: 'Not signed in.' });
-        const wait = await rateLimit(`email:${session.email}`, LIMITS.email);
-        if (wait) return json(429, { error: 'Too many attempts. Try again later.' }, { 'retry-after': String(wait) });
         const { body, tooLarge, malformed } = await readJson(req);
         if (tooLarge || malformed) return json(400, { error: 'Invalid request.' });
-        const password = typeof body?.password === 'string' ? body.password : '';
-        const { rows } = await db.query(`SELECT password_hash FROM users WHERE id = $1`, [session.userId]);
-        // Re-check the password so a hijacked or unattended session can't destroy the account.
-        if (!rows[0] || password.length > 256 || !(await verifyPassword(password, rows[0].password_hash))) {
-          return json(401, { error: 'Incorrect password.' });
-        }
+        // Ask for the email to be typed again so an accidental click can't delete everything.
+        if (normalizeEmail(body?.email) !== session.email) return json(400, { error: 'That email doesn’t match this account.' });
         // Sessions and data are removed by ON DELETE CASCADE.
         await db.query(`DELETE FROM users WHERE id = $1`, [session.userId]);
-        await db.query(`DELETE FROM rate_limits WHERE key = $1`, [`email:${session.email}`]);
         return json(200, { ok: true }, { 'set-cookie': sessionCookie(secure, '', 0) });
       }
 
