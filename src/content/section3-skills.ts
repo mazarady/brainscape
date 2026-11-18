@@ -4,6 +4,16 @@ export const skills3: CourseModule = {
   id: 's3-skills',
   section: 'Section Three',
   name: 'Your Skills as a Diver III',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['sk3-01', 'Deep Water Entry – Seated Back Roll'],
+    ['sk3-04', 'Remove and Replace Weights at the Surface'],
+    ['sk3-08', 'Cramp Release'],
+    ['sk3-11', 'Neutral Buoyancy – Hovering'],
+    ['sk3-14', 'Fine-Tuning Your Trim'],
+    ['sk3-15', 'Air Depletion/Alternate Air Source Combined Exercise'],
+    ['sk3-18', 'Controlled Emergency Swimming Ascent'],
+  ],
   notes: [
     {
       heading: 'Entries and weights',

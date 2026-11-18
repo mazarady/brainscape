@@ -4,6 +4,11 @@ export const equipment3: CourseModule = {
   id: 's3-equipment',
   section: 'Section Three',
   name: 'Equipment III',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['eq3-01', 'Surface Signaling Devices'],
+    ['eq3-08', 'Dive Floats and Flags'],
+  ],
   notes: [
     {
       heading: 'Surface signaling devices',

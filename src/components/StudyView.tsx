@@ -281,7 +281,10 @@ export default function StudyView({
               {revealed &&
                 (mcOrder ? (
                   <div className="face answer">
-                    <div className="face-text big">{mcLetters}</div>
+                    <div className="fc-answer">
+                      <div className="face-text big">{mcLetters}</div>
+                      {entry.card.mc!.source && <div className="source">{entry.card.mc!.source}</div>}
+                    </div>
                   </div>
                 ) : (
                   <div className="face answer">

@@ -4,6 +4,13 @@ export const equipment2: CourseModule = {
   id: 's2-equipment',
   section: 'Section Two',
   name: 'Equipment II',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['eq2-01', 'Exposure Suits I'],
+    ['eq2-17', 'Cutting Tools'],
+    ['eq2-23', 'Dive Gear Bags'],
+    ['eq2-26', 'Dive Instruments'],
+  ],
   notes: [
     {
       heading: 'Exposure suits',

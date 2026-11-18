@@ -9,6 +9,15 @@ describe('course content', () => {
     it(`${course.name}: question ids are unique`, () => {
       expect(new Set(qs.map((q) => q.id)).size).toBe(qs.length);
     });
+    it(`${course.name}: every module's topic list starts at its first question and names real ids in order`, () => {
+      for (const m of course.modules) {
+        const ids = m.questions.map((q) => q.id);
+        expect(m.topics[0]?.[0], m.id).toBe(ids[0]);
+        const idx = m.topics.map(([id]) => ids.indexOf(id));
+        expect(idx.every((i) => i >= 0), m.id).toBe(true);
+        expect(idx, m.id).toEqual([...idx].sort((a, b) => a - b));
+      }
+    });
     it(`${course.name}: every question has a valid answer key`, () => {
       for (const q of qs) {
         expect(q.options.length, q.id).toBeGreaterThanOrEqual(2);
@@ -24,6 +33,10 @@ describe('course content', () => {
 describe('course sync and quizzes', () => {
   const state = syncAllCourses({ version: 1, classes: [] });
   const cls = state.classes[0];
+
+  it('gives every question a full source path', () => {
+    for (const c of cls.decks.flatMap((d) => d.cards)) expect(c.mc!.source, c.id).toMatch(/^Section \w+ → .+ → .+$/);
+  });
 
   it('adds the course and is idempotent', () => {
     expect(cls.courseId).toBe('padi-ow');

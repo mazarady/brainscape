@@ -4,6 +4,18 @@ export const beingADiver3: CourseModule = {
   id: 's3-being-a-diver',
   section: 'Section Three',
   name: 'Being a Diver III',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['bd3-01', 'Dive Environments and Conditions'],
+    ['bd3-24', 'Assessing Conditions'],
+    ['bd3-27', 'Diving Within Your Limits'],
+    ['bd3-32', 'Aquatic Life'],
+    ['bd3-45', 'Diving from Shore'],
+    ['bd3-50', 'Shore Diving Through Mild Surf'],
+    ['bd3-61', 'Diving from Boats – Preparation'],
+    ['bd3-68', 'Diving from Boats – Procedures'],
+    ['bd3-81', 'Dive Planning'],
+  ],
   notes: [
     {
       heading: 'Environments and conditions',
@@ -157,7 +169,7 @@ export const beingADiver3: CourseModule = {
     one('bd3-52', 'After entering you feel mild surge. How might you adjust?', ['Dive deeper', 'Dive shallower', 'Face the shore', 'Face away from shore'], 0, 'Also stay away from shallow rocks and reef.'),
     one('bd3-53', 'Waves are approaching shore at an angle. Your plan should allow for…', ['A current moving you parallel to shore', 'A current moving you straight out', 'No noticeable current', 'An upwelling'], 0, 'That’s a longshore current — often enter up-current and exit down-current.'),
     one('bd3-54', 'You’re caught in a strong current rushing away from shore. You should inflate your BCD and swim…', ['Parallel to shore', 'With the current', 'Against the current', 'Down to the bottom'], 0, 'That’s a rip current. Most rip accidents come from panic.'),
-    one('bd3-55', 'The wind has blown from shore for several days. You’ll likely find water that is…', ['Cooler and clearer', 'Warmer and clearer', 'Cooler and murkier', 'Warmer and murkier'], 0, 'That’s an upwelling.'),
+    one('bd3-55', 'The wind has blown from shore for several days. You’ll likely find water that is…', ['Cooler and clearer', 'Warmer and clearer', 'Cooler and murkier', 'Warmer and murkier'], 0, 'That’s an upwelling: wind from shore pushes the warm surface water out to sea, and deeper water rises to replace it. Deep water is colder and carries fewer particles, so visibility usually improves.'),
     many('bd3-56', 'Tides affect which of these dive conditions?', ['Currents', 'Visibility', 'Depth', 'Water temperature'], [0, 1, 2], 'The best time to shore dive is usually around high tide.'),
     one('bd3-57', 'While entering through mild surf, how should you stand as a wave comes?', ['Sideways to it, leaning in', 'With your back to it', 'Behind your buddy', 'Facing the sea'], 0, 'Hold your mask and regulator as it passes.'),
     one('bd3-58', 'What is undertow?', ['Water from breaking waves flowing back to sea under incoming waves', 'A current along the shore', 'Back-and-forth motion under waves', 'Deep cold water rising'], 0, 'It can knock you off balance. Surge is the back-and-forth motion.'),
