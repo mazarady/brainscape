@@ -4,6 +4,14 @@ export const problemManagement: CourseModule = {
   id: 's3-problem-management',
   section: 'Section Three',
   name: 'Problem Management',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['pm-01', 'Prevention'],
+    ['pm-06', 'Surface Problem Management – Responsive Diver'],
+    ['pm-15', 'Surface Problem Management – Unresponsive Diver'],
+    ['pm-20', 'Underwater Problem Management'],
+    ['pm-36', 'First Responder Care for Diving-Related Emergencies'],
+  ],
   notes: [
     {
       heading: 'Prevention',

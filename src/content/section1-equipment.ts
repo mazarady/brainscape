@@ -4,6 +4,18 @@ export const equipment1: CourseModule = {
   id: 's1-equipment',
   section: 'Section One',
   name: 'Equipment I',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['eq1-01', 'Choosing and Caring for Scuba Equipment'],
+    ['eq1-07', 'Dive Masks'],
+    ['eq1-14', 'Snorkels'],
+    ['eq1-18', 'Fins'],
+    ['eq1-23', 'Scuba Kit'],
+    ['eq1-27', 'BCD – Buoyancy Control Device'],
+    ['eq1-34', 'Regulators'],
+    ['eq1-48', 'Cylinders'],
+    ['eq1-61', 'Weight Systems'],
+  ],
   notes: [
     {
       heading: 'Choosing and caring for gear',
@@ -147,7 +159,7 @@ export const equipment1: CourseModule = {
     one('eq1-53', 'Where should you get your cylinder filled?', ['Only at a reputable scuba air station', 'From any compressed air source', 'With pure oxygen', 'With pure nitrogen'], 0, 'Scuba air must be specially filtered — contaminants harmless at the surface can be toxic at depth.'),
     one('eq1-54', 'Why should you never completely empty a scuba cylinder?', ['To keep moisture from getting in', 'It makes the cylinder lighter', 'The valve will lock', 'It voids the warranty'], 0, 'Keep about 20 bar / 300 psi in it. If it drains completely, have it visually inspected.'),
     one('eq1-55', 'Why is a cylinder stored standing upright?', ['So any moisture collects at the bottom, the thickest part', 'So the valve stays dry', 'To save space', 'So it stays cool'], 0, 'Store it where it can’t be knocked over.'),
-    one('eq1-56', 'What does a reserve (“J”) valve do?', ['Warns you of low air by restricting flow — it gives no extra air', 'Gives you an extra 50 bar of air', 'Prevents overfilling', 'Replaces the SPG'], 0, 'A J valve is an old-style low-air warning: when about 20–40 bar / 300–500 psi is left, a spring restricts your air so breathing gets harder, and you pull a lever to release the rest. It gives no extra air, and you still manage your air with your SPG. (Equipment I → Cylinders)'),
+    one('eq1-56', 'What does a reserve (“J”) valve do?', ['Warns you of low air by restricting flow — it gives no extra air', 'Gives you an extra 50 bar of air', 'Prevents overfilling', 'Replaces the SPG'], 0, 'A J valve is an old-style low-air warning: when about 20–40 bar / 300–500 psi is left, a spring restricts your air so breathing gets harder, and you pull a lever to release the rest. It gives no extra air, and you still manage your air with your SPG.'),
     many('eq1-57', 'Which cylinder markings are you mainly interested in?', ['Serial number', 'Working pressure', 'Hydrostatic test date', 'Cylinder alloy code'], [0, 1, 2], 'The serial number helps if it’s lost or stolen; working pressure is the maximum fill; the test date shows it’s in date.'),
     one('eq1-58', 'Why are aluminum cylinders common in tropical locations?', ['They resist corrosion', 'They hold more air', 'They are always smaller', 'They don’t need inspections'], 0, 'Steel cylinders usually hold the same air in a smaller size and/or at lower pressure.'),
     one('eq1-59', 'Why should you keep a cylinder out of high heat?', ['Heat raises the pressure and can blow the burst disk or weaken the metal', 'Heat makes the air taste bad', 'Heat empties the cylinder', 'It’s fine to leave it in heat'], 0, 'A cylinder that has been in a fire must be professionally tested — aluminum ones are usually condemned.'),

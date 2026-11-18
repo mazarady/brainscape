@@ -4,6 +4,15 @@ export const beingADiver1: CourseModule = {
   id: 's1-being-a-diver',
   section: 'Section One',
   name: 'Being a Diver I',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['bd1-01', 'Water Pressure and Air Volume Effects'],
+    ['bd1-13', 'The Effects of Increasing Pressure on Body Air Spaces'],
+    ['bd1-27', 'The Effects of Decreasing Pressure on Body Air Spaces'],
+    ['bd1-36', 'Breathing Underwater'],
+    ['bd1-42', 'Buoyancy and Controlling Buoyancy'],
+    ['bd1-52', 'The Buddy System'],
+  ],
   notes: [
     {
       heading: 'Pressure, volume and density',

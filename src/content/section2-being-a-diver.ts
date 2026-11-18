@@ -4,6 +4,18 @@ export const beingADiver2: CourseModule = {
   id: 's2-being-a-diver',
   section: 'Section Two',
   name: 'Being a Diver II',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['bd2-01', 'Seeing and Hearing as a Diver'],
+    ['bd2-07', 'Swimming and Moving'],
+    ['bd2-12', 'Staying Warm'],
+    ['bd2-18', 'Breathing Effectively Underwater'],
+    ['bd2-27', 'The Buddy System (continued)'],
+    ['bd2-37', 'Managing Your Air Supply as a Buddy Team'],
+    ['bd2-42', 'Swimming at the Surface'],
+    ['bd2-47', 'Descents in Open Water'],
+    ['bd2-54', 'Ascents in Open Water'],
+  ],
   notes: [
     {
       heading: 'Seeing and hearing',

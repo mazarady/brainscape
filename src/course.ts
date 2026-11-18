@@ -38,13 +38,16 @@ export function syncCourse(state: AppState, course: Course): AppState {
     const id = deckIdFor(course.id, m.id);
     const prev = base.decks.find((d) => d.id === id);
     const prevCards = new Map((prev?.cards ?? []).map((c) => [c.id, c]));
+    let topic = '';
     const cards: Card[] = m.questions.map((q) => {
+      topic = m.topics.find(([start]) => start === q.id)?.[1] ?? topic;
+      const source = [m.section, m.name, topic].filter(Boolean).join(' → ');
       const id = cardId(course.id, q);
       const old = prevCards.get(id);
       const content = {
         question: q.q,
         answer: answerText(q),
-        mc: { options: q.options, correct: q.correct, explain: q.explain },
+        mc: { options: q.options, correct: q.correct, explain: q.explain, source },
         builtIn: true,
       };
       return old ? { ...old, ...content } : { id, rating: 0, dueStep: 0, timesSeen: 0, ...content };

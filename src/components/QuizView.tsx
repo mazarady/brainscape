@@ -180,6 +180,7 @@ export default function QuizView({
                 </div>
                 <div className="review-right">Correct: {it.card.mc!.correct.map((o) => it.card.mc!.options[o]).join('; ')}</div>
                 <div className="review-explain">{it.card.mc!.explain}</div>
+                {it.card.mc!.source && <div className="source">Source: {it.card.mc!.source}</div>}
               </li>
             ))}
           </ol>
@@ -242,6 +243,7 @@ export default function QuizView({
         {isChecked && (
           <div className={`feedback ${right ? 'right' : 'wrong'}`}>
             <strong>{right ? 'Correct!' : 'Not quite.'}</strong> {item.card.mc!.explain}
+            {item.card.mc!.source && <div className="source">Source: {item.card.mc!.source}</div>}
           </div>
         )}
 

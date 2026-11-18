@@ -12,6 +12,8 @@ export interface CourseModule {
   /** e.g. "Section One" */
   section: string;
   name: string;
+  /** [first question id, topic name] pairs, in question order — gives each question its source page. */
+  topics: [string, string][];
   /** Key points to read before practising, one per bullet. */
   notes: { heading: string; points: string[] }[];
   questions: CourseQuestion[];

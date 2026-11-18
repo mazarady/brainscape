@@ -409,3 +409,9 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
   .section-actions { width: 100%; padding-left: 34px; }
   .section-group .deck-row { padding-left: 16px; }
 }
+
+/* Where a question comes from in the course */
+.source { margin-top: 8px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+.feedback .source { color: inherit; opacity: 0.75; }
+.fc-answer { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.fc-answer .source { margin-top: 12px; }

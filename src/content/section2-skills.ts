@@ -4,6 +4,21 @@ export const skills2: CourseModule = {
   id: 's2-skills',
   section: 'Section Two',
   name: 'Your Skills as a Diver II',
+  // Where each topic's questions start (in question order).
+  topics: [
+    ['sk2-01', 'Deep Water Entry – Giant Stride'],
+    ['sk2-04', 'Weight Check and Proper Weighting'],
+    ['sk2-07', 'Dealing with a Loose Cylinder Band'],
+    ['sk2-09', 'Snorkel Clearing'],
+    ['sk2-10', 'Snorkel/Regulator Exchange'],
+    ['sk2-11', 'Neutral Buoyancy'],
+    ['sk2-13', 'Mask Removal and Replacement, and No-Mask Breathing'],
+    ['sk2-16', 'Disconnecting Your Low-Pressure Inflator'],
+    ['sk2-18', 'Air (Gas) Depletion Exercise'],
+    ['sk2-19', 'Air Awareness and Managing Your Air Supply'],
+    ['sk2-20', 'Deep Water Exit – Ladder Exit'],
+    ['sk2-23', 'Disconnecting Your Low-Pressure Inflator'],
+  ],
   notes: [
     {
       heading: 'Entries, weighting and loose bands',
