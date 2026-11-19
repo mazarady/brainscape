@@ -1,4 +1,5 @@
 import { useState, type Dispatch } from 'react';
+import Icon from './Icon';
 import type { Card, Deck, StudyClass } from '../types';
 import { allCards, mastery, ratingBreakdown, studiedCount } from '../scheduler';
 import type { Action } from '../store';
@@ -157,7 +158,7 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
           disabled={d.cards.length === 0}
           onClick={() => go({ name: 'study', classId: cls.id, deckIds: [d.id] })}
         >
-          ▶
+          <Icon name="play" size={14} />
         </button>
       </li>
     );
@@ -180,7 +181,7 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
               disabled={selectedCards.length === 0}
               onClick={() => go({ name: 'study', classId: cls.id })}
             >
-              {isCourse ? 'Flashcards' : 'Study'} <span className="play">▶</span>
+              {isCourse ? 'Flashcards' : 'Study'} <span className="play"><Icon name="play" size={14} /></span>
             </button>
             <Menu
               items={[
@@ -258,7 +259,7 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
           <div className="breakdown">
             {([5, 4, 3, 2, 1, 0] as const).map((r) => (
               <div key={r} className="breakdown-row">
-                <span className="chip" style={{ background: RATING_COLORS[r] }}>{r || '–'}</span>
+                <span className="chip" style={{ background: RATING_COLORS[r] }}><span className="glyph">{r || '–'}</span></span>
                 <span className="breakdown-label">{r ? ['', 'Not at all', 'Barely', 'Somewhat', 'Mostly', 'Perfectly'][r] : 'Not studied'}</span>
                 <span className="breakdown-bar"><span style={{ width: `${(breakdown[r] / (cards.length || 1)) * 100}%`, background: RATING_COLORS[r] }} /></span>
                 <span className="breakdown-n">{breakdown[r]}</span>
@@ -308,7 +309,9 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
                       />
                     </label>
                     <button className="section-toggle" aria-expanded={open} onClick={() => toggleGroup(key)}>
-                      <span className="chev">{open ? '▾' : '▸'}</span>
+                      <span className="chev" aria-hidden="true">
+                        <Icon name="chevron" size={12} />
+                      </span>
                       <span className="section-title">{g.section ?? 'Your decks'}</span>
                       <span className="muted small">
                         {g.decks.length} part{g.decks.length === 1 ? '' : 's'} · {mcCount || gCards.length} {mcCount ? 'questions' : 'cards'} · {Math.round(mastery(gCards))}% mastery

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Icon from './components/Icon';
 import { useAppStore, type SaveStatus } from './store';
 import type { User } from './api';
 import type { AppState } from './types';
@@ -131,7 +132,7 @@ export default function App({
         onSelect={(id) => go({ name: 'class', classId: id })}
         onCreate={() => setCreatingClass(true)}
       />
-      <button className="menu-toggle" aria-label="Toggle menu" onClick={() => setMenuOpen((o) => !o)}>☰</button>
+      <button className="menu-toggle" aria-label="Toggle menu" onClick={() => setMenuOpen((o) => !o)}><Icon name="menu" size={20} /></button>
       <div className="scrim" onClick={() => setMenuOpen(false)} />
       <main className="main">
         {banner}

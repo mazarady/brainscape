@@ -1,4 +1,5 @@
 import { useState, type Dispatch } from 'react';
+import Icon from './Icon';
 import type { Card, Deck, StudyClass } from '../types';
 import type { Action } from '../store';
 import { RATING_COLORS } from './ClassView';
@@ -61,12 +62,12 @@ function CardRow({ card, n, onSave, onDelete }: { card: Card; n: number; onSave:
       <div className="card-a">{card.answer}</div>
       <div className="card-row-actions">
         <span className="chip" style={{ background: RATING_COLORS[card.rating] }} title={card.rating ? `Confidence ${card.rating}` : 'Not studied'}>
-          {card.rating || '–'}
+          <span className="glyph">{card.rating || '–'}</span>
         </span>
         {!card.builtIn && (
           <>
-            <button className="icon-btn" aria-label="Edit" onClick={() => setEditing(true)}>✎</button>
-            <button className="icon-btn" aria-label="Delete" onClick={() => confirm('Delete this card?') && onDelete()}>🗑</button>
+            <button className="icon-btn" aria-label="Edit" onClick={() => setEditing(true)}><Icon name="edit" /></button>
+            <button className="icon-btn" aria-label="Delete" onClick={() => confirm('Delete this card?') && onDelete()}><Icon name="trash" /></button>
           </>
         )}
       </div>

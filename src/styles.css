@@ -120,7 +120,7 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
 .deck-name:hover { text-decoration: underline; }
 .rating-bar { height: 8px; background: #e7eaee; border-radius: 4px; display: flex; overflow: hidden; max-width: 600px; }
 .rating-bar span { height: 100%; transition: width .4s; }
-.play-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #7c8796; color: #fff; font-size: 0.7rem; padding-left: 3px; flex-shrink: 0; }
+.play-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #7c8796; color: #fff; padding: 0; display: grid; place-items: center; flex-shrink: 0; }
 .play-btn:hover:not(:disabled) { background: var(--accent); }
 .add-deck { display: flex; gap: 12px; padding: 18px 24px; }
 .add-deck input { flex: 1; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; }
@@ -142,7 +142,7 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
 .form input, .form textarea, textarea.bulk { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-weight: 400; resize: vertical; width: 100%; }
 .field-label { font-weight: 600; font-size: 0.9rem; }
 .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
-.swatch { width: 34px; height: 34px; border-radius: 8px; border: 2px solid transparent; background: #f2f4f7; }
+.swatch { width: 34px; height: 34px; border-radius: 8px; border: 2px solid transparent; background: #f2f4f7; padding: 0; display: grid; place-items: center; }
 .swatch.icon { font-size: 1.2rem; }
 .swatch.on { border-color: var(--navy); box-shadow: 0 0 0 2px #fff inset; }
 .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 10px; }
@@ -400,7 +400,10 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
 .section-head { display: flex; align-items: center; gap: 14px; padding: 16px 24px; background: #f9fbfd; flex-wrap: wrap; }
 .section-group.open .section-head { border-bottom: 1px solid var(--line); }
 .section-toggle { flex: 1; min-width: 200px; display: flex; align-items: baseline; gap: 12px; border: none; background: none; padding: 0; text-align: left; flex-wrap: wrap; }
-.chev { width: 14px; color: var(--muted); }
+.chev { width: 18px; height: 18px; flex-shrink: 0; align-self: center; display: grid; place-items: center; color: var(--muted); transition: transform .15s; }
+.chev svg { display: block; }
+.section-group.open .chev { transform: rotate(90deg); }
+.section-toggle { align-items: center; }
 .section-title { font-weight: 800; font-size: 1.1rem; color: var(--navy); }
 .section-actions { display: flex; gap: 8px; }
 .section-group .deck-row { padding-left: 52px; }
@@ -409,6 +412,24 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
   .section-actions { width: 100%; padding-left: 34px; }
   .section-group .deck-row { padding-left: 16px; }
 }
+
+/* Icon centering: every glyph sits in a box with no extra line-height, so
+   font metrics (emoji, letters, arrows) can't push it off-centre. */
+.icon-btn, .class-icon, .class-badge, .add-class .plus, .study-btn .play, .chip, .play-btn,
+.rate-btn, .menu-toggle, .swatch, .opt-key, .fc-letter, .opt-mark, .brand-mark {
+  line-height: 1;
+}
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.rate-btn, .menu-toggle { display: inline-grid; place-items: center; padding: 0; }
+.menu-toggle { display: none; }
+@media (max-width: 860px) { .menu-toggle { display: grid; } }
+.icon { display: block; flex-shrink: 0; }
+.opt-mark { display: grid; place-items: center; }
+.add-class .plus { color: #fff; }
+/* Letters and digits inside round badges: trim the text box to the capital
+   height so the glyph itself is centred, not the font's line box (which leaves
+   room for descenders and makes capitals sit high). Older browsers ignore it. */
+.glyph { display: block; line-height: 1; text-box: trim-both cap alphabetic; }
 
 /* Where a question comes from in the course */
 .source { margin-top: 8px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }

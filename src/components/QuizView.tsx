@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch } from 'react';
+import Icon from './Icon';
 import type { StudyClass } from '../types';
 import type { Action } from '../store';
 import { buildExam, buildPractice, isCorrect, LETTERS, type QuizItem } from '../quiz';
@@ -231,10 +232,10 @@ export default function QuizView({
             const cls2 = isChecked ? (isRight ? 'right' : sel ? 'wrong' : 'dim') : sel ? 'selected' : '';
             return (
               <button key={opt} className={`option ${cls2}`} onClick={() => choose(opt)} role={multi ? 'checkbox' : 'radio'} aria-checked={sel}>
-                <span className={`opt-key ${multi ? 'square' : ''}`}>{LETTERS[pos]}</span>
+                <span className={`opt-key ${multi ? 'square' : ''}`}><span className="glyph">{LETTERS[pos]}</span></span>
                 <span className="opt-text">{item.card.mc!.options[opt]}</span>
-                {isChecked && isRight && <span className="opt-mark">✓</span>}
-                {isChecked && sel && !isRight && <span className="opt-mark">✕</span>}
+                {isChecked && isRight && <span className="opt-mark"><Icon name="check" size={18} /></span>}
+                {isChecked && sel && !isRight && <span className="opt-mark"><Icon name="close" size={18} /></span>}
               </button>
             );
           })}
