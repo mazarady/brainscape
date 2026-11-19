@@ -1,0 +1,112 @@
+import { many, one, tf, type CourseModule } from './types';
+
+export const computers2: CourseModule = {
+  id: 's5-computers',
+  section: 'Section Five',
+  name: 'Using Dive Computers and Tables II',
+  topics: [
+    ['dc2-01', 'Planning a Minimum Surface Interval'],
+    ['dc2-08', 'Flying After Diving and Altitude Diving'],
+    ['dc2-20', 'Cold and/or Strenuous Dives'],
+    ['dc2-25', 'Emergency Decompression Stops'],
+    ['dc2-33', 'First Aid and Treatment for Decompression Illness'],
+  ],
+  notes: [
+    {
+      heading: 'Minimum surface interval',
+      points: [
+        'You need one when you want a repetitive dive to a SPECIFIC depth for a SPECIFIC time (e.g. a flat site, or a photo dive at 18 m).',
+        'It tells you how long to wait at the surface to have the no stop time you want — always plan a bit longer than the bare minimum.',
+        'Three ways with a computer: wait and check (scroll no stop times now and then), the computer’s plan mode (enter a surface interval), or a tablet/phone planning app.',
+        'Repetitive no stop times grow quickly early in the interval, then more slowly.',
+        'The RDP Table/eRDPML give a good ESTIMATE but won’t exactly match your computer — always scroll your computer before diving.',
+      ],
+    },
+    {
+      heading: 'Flying after diving and altitude',
+      points: [
+        'Going to altitude lowers surface pressure, so dissolved nitrogen comes out faster — higher DCS risk.',
+        'Flying after diving = dive at sea level, THEN go to altitude. Altitude diving = start and end the dive at altitude (e.g. mountain lake).',
+        'Single no stop dive → wait at least 12 hours before flying.',
+        'Repetitive dives or multiday diving → at least 18 hours.',
+        'Dives needing emergency decompression stops → MORE than 18 hours.',
+        'Recommendations change — follow the most current ones (e.g. Divers Alert Network). No recommendation guarantees no DCS.',
+        'No official rule for driving to altitude — be conservative; a longer interval means lower risk.',
+        'Use altitude procedures when diving at 300 m / 1000 ft or higher (Altitude Adventure Dive / Altitude Diver course).',
+      ],
+    },
+    {
+      heading: 'Cold or strenuous dives',
+      points: [
+        'Being cold or working hard can leave you with more dissolved nitrogen than your computer calculates → more DCS risk.',
+        'Be even MORE conservative: stay well within no stop limits; some computers have a conservative setting (set before the dive).',
+        'With the RDP/eRDPML, plan the dive as if it were 4 m / 10 ft DEEPER. Safety stops are especially wise.',
+      ],
+    },
+    {
+      heading: 'Emergency decompression',
+      points: [
+        'Exceed a no stop limit → you must make one or more emergency decompression stops. Required (unlike optional safety stops).',
+        'In recreational diving this only happens if you didn’t watch your instruments or something forced you to overstay.',
+        'Your computer’s decompression mode gives the stop depth and time. Don’t go shallower than the stop depth (slightly deeper is OK).',
+        'Low on air? Stop as long as you can but keep enough air to surface and exit safely — don’t run out of air trying.',
+        'Missed a stop? Relax, breathe 100% oxygen if available, watch for DCS symptoms, and don’t dive for at least 24 hours. NEVER go back down to make the stop.',
+      ],
+    },
+    {
+      heading: 'Decompression illness (DCI)',
+      points: [
+        'DCI = lung overexpansion injuries AND decompression sickness together — same first aid, so you don’t need to tell them apart.',
+        'First aid: stop diving; check breathing/CPR; contact emergency medical care (and a diver emergency service); keep them lying down on emergency oxygen; monitor and prevent shock; unresponsive but breathing → level, left side down, head supported, on oxygen.',
+        'Almost all DCI needs recompression in a chamber — the faster, the better.',
+        'Get diver accident insurance — cheap, and covers costs like air ambulance and recompression that normal insurance often doesn’t.',
+      ],
+    },
+  ],
+  questions: [
+    one('dc2-01', 'You find a minimum surface interval after a dive when you want to know how long to wait to have a certain ___ on the next dive.', ['No stop time at a planned depth', 'Air pressure', 'Water temperature', 'Visibility'], 0, 'It answers “how long until I can dive to X depth for Y minutes?”'),
+    tf('dc2-02', 'One way to find a minimum surface interval with a computer is to check the no stop times for your planned depth every so often during the surface interval.', true, 'That’s the “wait and check” method.'),
+    tf('dc2-03', 'The RDP Table or eRDPML tells you the exact surface interval your dive computer will require.', false, 'Tables give a good estimate but won’t exactly match your computer. Scroll your computer before diving.'),
+    many('dc2-04', 'What are the three ways to find a minimum surface interval with a dive computer?', ['Wait and check', 'The computer’s plan mode', 'A tablet or smartphone planning app', 'Ask your buddy to guess'], [0, 1, 2], 'Tables can also give an estimate.'),
+    one('dc2-05', 'When would you most likely need a minimum surface interval?', ['A repetitive dive to a specific depth for a specific time, like on a flat site', 'A shallow multilevel reef dive', 'Your first dive of the day', 'A snorkel'], 0, 'On a flat site you can’t move shallower to gain no stop time.'),
+    one('dc2-06', 'During a surface interval, how do repetitive no stop times change?', ['They increase quickly at first, then more slowly', 'They increase at a steady rate', 'They stay the same for an hour, then jump', 'They decrease'], 0, 'With experience you’ll get a feel for how long to wait.'),
+    one('dc2-07', 'When planning a minimum surface interval, how long should you actually wait?', ['A bit longer than the absolute minimum', 'Exactly the minimum', 'Less than the minimum if you feel fine', 'It doesn’t matter'], 0, 'Staying well within limits is the conservative choice.'),
+
+    one('dc2-08', 'Why can going to altitude after diving be a problem?', ['Lower pressure can increase DCS risk', 'Higher pressure increases DCS risk', 'Lower pressure increases oxygen problems', 'Higher pressure increases oxygen problems'], 0, 'Dissolved nitrogen comes out of solution faster at lower pressure.'),
+    tf('dc2-09', 'Flying after diving means going to altitude after a dive; altitude diving means beginning and ending a dive at altitude.', true, 'They have different recommendations and procedures.'),
+    one('dc2-10', 'You and your buddy have made two no stop dives a day for the last two days. How long should you wait before flying?', ['At least 18 hours', 'At least 12 hours', 'At least 24 hours', 'At least 6 hours'], 0, 'Repetitive or multiday diving = 18 hours.'),
+    one('dc2-11', 'You made a single no stop dive today. What is the minimum suggested wait before flying?', ['12 hours', '18 hours', '24 hours', '6 hours'], 0, 'Single no stop dive = 12 hours.'),
+    one('dc2-12', 'You had to make an emergency decompression stop. How long should you wait before flying?', ['More than 18 hours', 'Exactly 12 hours', '6 hours', 'No wait needed'], 0, 'Dives needing decompression stops call for a longer interval than 18 hours.'),
+    tf('dc2-13', 'Flying after diving recommendations can change, so you should keep up with and follow the most current ones.', true, 'Sources include diver publications and Divers Alert Network.'),
+    one('dc2-14', 'At or above what altitude do you need to use altitude diving procedures?', ['300 m / 1000 ft', '600 m / 2000 ft', '150 m / 500 ft', '450 m / 1500 ft'], 0, 'Computers handle this differently — check the manufacturer’s literature.'),
+    tf('dc2-15', 'Following the flying-after-diving recommendations guarantees you won’t get decompression sickness.', false, 'No recommendation can guarantee that — some divers may still be affected.'),
+    one('dc2-16', 'What are the recommendations for driving over a mountain pass after diving?', ['There are none — be conservative; a longer interval is lower risk', 'Wait exactly 6 hours', 'Driving is never a concern', 'Use the altitude diving tables'], 0, 'Some divers use the flying guidelines, but they’re untested for driving.'),
+    one('dc2-17', 'What cabin altitude range are the flying-after-diving recommendations based on?', ['600–2400 m / 2000–8000 ft', '0–300 m', '3000–6000 m', 'Sea level only'], 0, 'Typical airliner cabin pressure.'),
+    one('dc2-18', 'Diving in a mountain lake is an example of…', ['Altitude diving', 'Flying after diving', 'Decompression diving', 'Technical diving'], 0, 'You start and end the dive at altitude.'),
+    many('dc2-19', 'Which minimum preflight surface intervals are suggested?', ['Single no stop dive: 12 hours', 'Repetitive or multiday no stop dives: 18 hours', 'Dives with emergency decompression stops: more than 18 hours', 'Any dive: 2 hours'], [0, 1, 2], 'Always follow the most current recommendations.'),
+
+    one('dc2-20', 'Why can cold and/or strenuous dives be a problem for DCS risk?', ['You may end the dive with more dissolved nitrogen than your computer calculates', 'It’s easier to ascend too fast', 'Cold water can shut down your computer', 'You use less air'], 0, 'Your computer only knows depth and time.'),
+    one('dc2-21', 'You got cold and worked hard during a dive. What should you do?', ['Be even more conservative', 'Skip the safety stop', 'Make a faster ascent to warm up', 'Nothing different'], 0, 'Stay well within no stop limits with extra time available.'),
+    one('dc2-22', 'Using the RDP Table or eRDPML, how do you plan a cold or strenuous dive?', ['As if it were 4 m / 10 ft deeper than the actual depth', 'As if it were 4 m / 10 ft shallower', 'As requiring emergency decompression', 'As having no surface interval'], 0, 'That builds in extra conservatism.'),
+    one('dc2-23', 'How can some dive computers help with cold or strenuous dives?', ['They have a more conservative setting, usually set before the dive', 'They warm you up', 'They measure your body temperature', 'They automatically shorten the dive'], 0, 'Check your manufacturer’s literature.'),
+    tf('dc2-24', 'Safety stops are especially wise after a cold and/or strenuous dive.', true, 'They’re recommended after every dive.'),
+
+    one('dc2-25', 'If you go over a no stop limit, you…', ['Must make one or more emergency decompression stops', 'Must surface at a very slow rate', 'Should make a longer safety stop only', 'Can surface directly'], 0, 'Decompression stops are required; safety stops are optional.'),
+    one('dc2-26', 'Where do you get the depths and times for emergency decompression stops?', ['Your dive computer (or the RDP/eRDPML procedures)', 'They don’t matter as long as you stop', 'Always 6 m and 3 m for 3 minutes', 'Your buddy decides'], 0, 'Your computer goes into decompression mode.'),
+    tf('dc2-27', 'If you surface without making an emergency decompression stop, you should get a fresh cylinder and go back down to make it.', false, 'Never go back down. Relax, breathe oxygen if available, watch for DCS signs and don’t dive for at least 24 hours.'),
+    one('dc2-28', 'How does a safety stop differ from an emergency decompression stop?', ['A safety stop keeps you well within limits; a decompression stop brings you back from outside them', 'They are the same', 'A safety stop is required; a decompression stop is optional', 'A decompression stop is shallower'], 0, 'Emergency decompression is never planned in recreational diving.'),
+    one('dc2-29', 'During an emergency decompression stop, how deep should you stay?', ['At the stop depth or slightly deeper — never shallower', 'Slightly shallower', 'Anywhere above 10 m', 'At the surface'], 0, 'Follow your computer.'),
+    one('dc2-30', 'You don’t have enough air to finish an emergency decompression stop. What should you do?', ['Stop as long as you can, but keep enough air to surface and exit safely', 'Stay until you run out of air', 'Skip it entirely and surface fast', 'Borrow your buddy’s air and stay as long as needed'], 0, 'Don’t run out of air underwater trying to complete it.'),
+    one('dc2-31', 'After missing a required decompression stop, how long should you wait before diving again?', ['At least 24 hours', '12 hours', '1 hour', 'You can dive again after breathing oxygen'], 0, 'Many computers lock out for that long.'),
+    one('dc2-32', 'In recreational diving, a required emergency decompression stop usually means…', ['You didn’t monitor your instruments or something forced you to overstay', 'You followed your plan perfectly', 'Your computer is faulty', 'You made a safety stop'], 0, 'Monitoring your instruments is your responsibility.'),
+
+    one('dc2-33', 'What does “decompression illness” (DCI) refer to?', ['Both lung overexpansion injuries and DCS', 'Only DCS', 'Only lung overexpansion injuries', 'Ear injuries from equalizing'], 0, 'Their first aid is the same, so you don’t need to tell them apart.'),
+    one('dc2-34', 'Treatment for most cases of DCI requires…', ['Recompression in a chamber', 'A long sleep', 'Putting the diver back underwater', 'Fluids only'], 0, 'The faster treatment starts, the lower the risk of permanent effects.'),
+    many('dc2-35', 'What is the first aid for suspected DCI?', ['Stop all diving and check breathing (CPR if needed)', 'Contact emergency medical care', 'Keep the diver lying down on emergency oxygen', 'Put the diver back in the water to recompress'], [0, 1, 2], 'Also monitor them and take steps to prevent shock.'),
+    one('dc2-36', 'A diver with suspected DCI is unresponsive but breathing normally. How should you position them?', ['Level, left side down, head supported, breathing oxygen', 'Sitting up', 'Head down, feet up', 'Face down'], 0, 'Continue care until emergency personnel arrive.'),
+    one('dc2-37', 'Why is diver accident insurance recommended?', ['It covers costs like air ambulance and recompression that normal insurance may not, and can reduce treatment delays', 'It’s required to dive', 'It replaces medical insurance', 'It pays for new gear'], 0, 'It’s inexpensive in most areas.'),
+    tf('dc2-38', 'You need to work out whether a diver has DCS or a lung overexpansion injury before giving first aid.', false, 'First aid is the same for both — that’s why they’re grouped as DCI.'),
+    one('dc2-39', 'How does recompression help a diver with DCI?', ['Pressure helps the body absorb the gas bubbles, then it’s reduced slowly over hours', 'It warms the diver', 'It gives them fresh air', 'It removes nitrogen instantly'], 0, 'Almost all DCI cases need it.'),
+    one('dc2-40', 'Which course qualifies you to give emergency oxygen to a diver with suspected DCI?', ['PADI Emergency Oxygen Provider', 'PADI Dry Suit Diver', 'PADI Peak Performance Buoyancy', 'PADI Underwater Navigator'], 0, 'It’s also a step toward Rescue Diver.'),
+  ],
+};
