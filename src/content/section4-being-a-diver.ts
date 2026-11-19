@@ -89,9 +89,10 @@ export const beingADiver4: CourseModule = {
     one('bd4-12', 'Which immunizations is it especially important to keep current?', ['Tetanus and typhoid', 'Measles and mumps', 'Flu only', 'None are relevant'], 0, 'Plus eat well and rest before diving.'),
 
     one('bd4-13', 'What’s the best way to keep your dive knowledge and skills current?', ['Dive regularly', 'Join a dive club', 'Read online forums', 'Watch dive videos'], 0, 'Pool dives with a buddy help if you can’t reach open water.'),
-    one('bd4-14', 'As a new Open Water Diver, after how long without diving should you refresh with PADI ReActivate?', ['Six months', 'One year', 'One month', 'Five years'], 0, 'Your instructor can run it; the knowledge part can be done on the PADI App.'),
+    one('bd4-14', 'As a new Open Water Diver, after how long without diving should you refresh with PADI ReActivate?', ['Six months', 'One year', 'One month', 'Five years'], 0, 'Your instructor can run it; the knowledge part can be done on the PADI App. (Older name: PADI Scuba Review — same idea, same six months.)'),
     many('bd4-15', 'How does continuing education help keep your skills sharp?', ['You visit new dive sites', 'You get more opportunities to dive', 'You expand the types of diving you do', 'You meet new buddies'], [0, 1, 2, 3], 'You use existing skills while learning new ones.'),
     tf('bd4-16', 'Staying involved with the dive community online and in person helps you keep up with current practices.', true, 'Clubs, outings, PADI Club and dive sites all help.'),
+    one('bd4-16b', 'As a new PADI Open Water Diver, you should refresh your dive skills with a PADI Scuba Review after ___ of inactivity.', ['Six months', 'One month', 'One year', 'Five years'], 0, 'Scuba Review is the older name for PADI ReActivate. After six months or more without diving, refresh your knowledge and skills.'),
 
     one('bd4-17', 'For practical purposes, air consists of oxygen and…', ['Nitrogen', 'Argon', 'Hydrogen', 'Helium'], 0, 'Trace gases are under 1% and are ignored.'),
     one('bd4-18', 'For practical purposes, air is ___% oxygen.', ['21', '79', '51', '11'], 0, 'And 79% nitrogen.'),
