@@ -71,8 +71,11 @@ export function buildExam(cls: StudyClass, deckIds: string[], count: number, ran
     .filter((l) => l.length);
   const total = byDeck.reduce((n, l) => n + l.length, 0);
   const want = Math.min(count, total);
-  // Proportional allocation, then top up round-robin.
-  const take = byDeck.map((l) => Math.floor((l.length / total) * want));
+  // At least one question from every part when there's room, then share the rest
+  // proportionally, then top up round-robin.
+  const base = want >= byDeck.length ? 1 : 0;
+  const rest = want - base * byDeck.length;
+  const take = byDeck.map((l) => Math.min(l.length, base + Math.floor(((l.length - base) / (total - base * byDeck.length || 1)) * rest)));
   let given = take.reduce((a, b) => a + b, 0);
   for (let i = 0; given < want; i = (i + 1) % byDeck.length) {
     if (take[i] < byDeck[i].length) {
