@@ -44,6 +44,13 @@ export const computers2: CourseModule = {
       ],
     },
     {
+      heading: '⭐ Safety stop vs emergency decompression stop',
+      points: [
+        'SAFETY STOP — recommended on normal recreational dives · usually 5 m / 15 ft · at least 3 minutes · adds a safety margin.',
+        'EMERGENCY DECOMPRESSION STOP — required after exceeding no stop limits · depth set by your computer or tables · duration set by your computer or tables · deals with excess nitrogen exposure.',
+      ],
+    },
+    {
       heading: 'Emergency decompression',
       points: [
         'Exceed a no stop limit → you must make one or more emergency decompression stops. Required (unlike optional safety stops).',
@@ -99,6 +106,13 @@ export const computers2: CourseModule = {
     one('dc2-30', 'You don’t have enough air to finish an emergency decompression stop. What should you do?', ['Stop as long as you can, but keep enough air to surface and exit safely', 'Stay until you run out of air', 'Skip it entirely and surface fast', 'Borrow your buddy’s air and stay as long as needed'], 0, 'Don’t run out of air underwater trying to complete it.'),
     one('dc2-31', 'After missing a required decompression stop, how long should you wait before diving again?', ['At least 24 hours', '12 hours', '1 hour', 'You can dive again after breathing oxygen'], 0, 'Many computers lock out for that long.'),
     one('dc2-32', 'In recreational diving, a required emergency decompression stop usually means…', ['You didn’t monitor your instruments or something forced you to overstay', 'You followed your plan perfectly', 'Your computer is faulty', 'You made a safety stop'], 0, 'Monitoring your instruments is your responsibility.'),
+    many('dc2-32a', 'Which describe a SAFETY stop?', ['Recommended on normal recreational dives', 'Usually at 5 m / 15 ft', 'At least 3 minutes', 'Adds a safety margin', 'Required after exceeding a no stop limit'], [0, 1, 2, 3], 'Being required after exceeding a no stop limit describes an emergency decompression stop.'),
+    many('dc2-32b', 'Which describe an EMERGENCY DECOMPRESSION stop?', ['Required after exceeding a no stop limit', 'Depth set by your computer or tables', 'Duration set by your computer or tables', 'Deals with excess nitrogen exposure', 'Always 3 minutes at 5 m / 15 ft'], [0, 1, 2, 3], 'The fixed 3 minutes at 5 m / 15 ft is the safety stop — decompression stop depth and time come from your computer or tables.'),
+    one('dc2-32c', 'Safety stop vs emergency decompression stop: which is RECOMMENDED on normal dives, and which is REQUIRED?', ['Safety stop is recommended; decompression stop is required after exceeding no stop limits', 'Safety stop is required; decompression stop is recommended', 'Both are always required', 'Both are optional'], 0, 'A safety stop adds a margin on normal dives; a decompression stop is mandatory once you’ve gone past a no stop limit.'),
+    one('dc2-32d', 'Where does the depth and length of an emergency decompression stop come from?', ['Your dive computer or tables', 'Always 5 m / 15 ft for 3 minutes', 'Your buddy’s judgment', 'The divemaster’s briefing'], 0, 'A safety stop is the one with the standard 5 m / 15 ft for at least 3 minutes.'),
+    one('dc2-32e', 'What is the standard safety stop?', ['At least 3 minutes at about 5 m / 15 ft', 'Whatever depth and time your computer calculates', '10 minutes at 10 m / 30 ft', '1 minute at the surface'], 0, 'Decompression stop depth and time are what your computer calculates.'),
+    one('dc2-32f', 'What is the PURPOSE of each stop?', ['Safety stop adds a safety margin; decompression stop deals with excess nitrogen after exceeding limits', 'Both just let you rest', 'Safety stop deals with excess nitrogen; decompression stop adds a margin', 'Both are for equalizing'], 0, 'Safety stops keep you well within limits; decompression stops bring you back from outside them.'),
+    tf('dc2-32g', 'A safety stop and an emergency decompression stop are the same thing.', false, 'Safety stop: recommended, ~5 m / 15 ft, at least 3 min, adds a margin. Decompression stop: required after exceeding no stop limits, depth and time from your computer/tables, deals with excess nitrogen.'),
 
     one('dc2-33', 'What does “decompression illness” (DCI) refer to?', ['Both lung overexpansion injuries and DCS', 'Only DCS', 'Only lung overexpansion injuries', 'Ear injuries from equalizing'], 0, 'Their first aid is the same, so you don’t need to tell them apart.'),
     one('dc2-34', 'Treatment for most cases of DCI requires…', ['Recompression in a chamber', 'A long sleep', 'Putting the diver back underwater', 'Fluids only'], 0, 'The faster treatment starts, the lower the risk of permanent effects.'),
