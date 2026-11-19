@@ -232,7 +232,7 @@ export default function QuizView({
           )}
           {hard && <span className="hard-badge">Hard</span>}
         </div>
-        <h2 className="quiz-q">{item.card.question}</h2>
+        <h2 className="quiz-q">{hard ? item.card.question.replace(/\s*\(Choose all that apply\.\)$/, '') : item.card.question}</h2>
         {hard ? <div className="quiz-hint">Select every answer you think is correct — there may be one or several.</div> : multi && <div className="quiz-hint">Select every correct answer.</div>}
         <div className="options" role={multi ? 'group' : 'radiogroup'}>
           {item.order.map((opt, pos) => {
