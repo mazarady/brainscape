@@ -46,6 +46,8 @@ export interface StudyClass {
   /** Set when this class mirrors a built-in course. */
   courseId?: string;
   quizHistory?: QuizResult[];
+  /** Harder quizzes: every question is select-all-that-apply and clues are hidden. */
+  hardMode?: boolean;
 }
 
 export interface QuizResult {
@@ -54,6 +56,7 @@ export interface QuizResult {
   correct: number;
   total: number;
   deckIds: string[];
+  hard?: boolean;
 }
 
 export interface AppState {

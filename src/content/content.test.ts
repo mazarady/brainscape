@@ -64,6 +64,22 @@ describe('course sync and quizzes', () => {
     expect(buildPractice(marked, marked.selectedDeckIds, 10)[0].card.id).toBe(target.id);
   });
 
+  it('hard mode shuffles true/false and targets weak questions', () => {
+    const tfCard = cls.decks.flatMap((d) => d.cards).find((c) => c.mc!.options[0] === 'True')!;
+    const tfDeck = cls.decks.find((d) => d.cards.includes(tfCard))!;
+    const orders = new Set<string>();
+    for (let i = 0; i < 40; i++) {
+      const it = buildExam(cls, [tfDeck.id], tfDeck.cards.length, { hard: true }).find((x) => x.card.id === tfCard.id)!;
+      orders.add(it.order.join());
+    }
+    expect(orders.size).toBe(2);
+    const normal = buildExam(cls, [tfDeck.id], tfDeck.cards.length).find((x) => x.card.id === tfCard.id)!;
+    expect(normal.order).toEqual([0, 1]);
+    const weak = cls.decks[2].cards[3];
+    const marked = { ...cls, decks: cls.decks.map((d) => ({ ...d, cards: d.cards.map((c) => ({ ...c, quizSeen: 4, quizCorrect: c.id === weak.id ? 0 : 4 })) })) };
+    expect(buildPractice(marked, marked.selectedDeckIds, 5, { hard: true })[0].card.id).toBe(weak.id);
+  });
+
   it('grades multi-answer questions exactly', () => {
     const multi = cls.decks.flatMap((d) => d.cards).find((c) => c.mc!.correct.length > 1)!;
     expect(isCorrect(multi, multi.mc!.correct)).toBe(true);

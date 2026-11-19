@@ -36,9 +36,9 @@ export function flashcardOrder(card: Card): number[] {
 
 export const LETTERS = 'ABCDEFGH';
 
-function optionOrder(card: Card, rand: () => number): number[] {
+function optionOrder(card: Card, rand: () => number, shuffleTrueFalse = false): number[] {
   const idx = card.mc!.options.map((_, i) => i);
-  return isTrueFalse(card.mc!.options) ? idx : shuffle(idx, rand);
+  return isTrueFalse(card.mc!.options) && !shuffleTrueFalse ? idx : shuffle(idx, rand);
 }
 
 export function quizPool(cls: StudyClass, deckIds: string[]) {
@@ -51,21 +51,29 @@ export function quizPool(cls: StudyClass, deckIds: string[]) {
  * Practice: favour questions you got wrong last time, then ones you haven't seen,
  * then ones with the lowest accuracy — with some randomness so sets vary.
  */
-export function buildPractice(cls: StudyClass, deckIds: string[], count: number, rand = Math.random): QuizItem[] {
+export interface QuizOptions {
+  /** Hard mode: shuffle true/false too, and lean harder on weak questions in practice. */
+  hard?: boolean;
+  rand?: () => number;
+}
+
+export function buildPractice(cls: StudyClass, deckIds: string[], count: number, { hard = false, rand = Math.random }: QuizOptions = {}): QuizItem[] {
   const scored = quizPool(cls, deckIds).map((e) => {
     const seen = e.card.quizSeen ?? 0;
     const acc = seen ? (e.card.quizCorrect ?? 0) / seen : 0;
-    const priority = (e.card.quizLastWrong ? 3 : 0) + (seen === 0 ? 2 : 0) + (1 - acc) + rand() * 1.5;
+    const priority = hard
+      ? (e.card.quizLastWrong ? 4 : 0) + (1 - acc) * 3 + rand()
+      : (e.card.quizLastWrong ? 3 : 0) + (seen === 0 ? 2 : 0) + (1 - acc) + rand() * 1.5;
     return { e, priority };
   });
   return scored
     .sort((a, b) => b.priority - a.priority)
     .slice(0, count)
-    .map(({ e }) => ({ ...e, order: optionOrder(e.card, rand) }));
+    .map(({ e }) => ({ ...e, order: optionOrder(e.card, rand, hard) }));
 }
 
 /** Exam: a random spread across all selected modules, in proportion to their size. */
-export function buildExam(cls: StudyClass, deckIds: string[], count: number, rand = Math.random): QuizItem[] {
+export function buildExam(cls: StudyClass, deckIds: string[], count: number, { hard = false, rand = Math.random }: QuizOptions = {}): QuizItem[] {
   const byDeck = deckIds
     .map((id) => shuffle(quizPool(cls, [id]), rand))
     .filter((l) => l.length);
@@ -84,7 +92,7 @@ export function buildExam(cls: StudyClass, deckIds: string[], count: number, ran
     }
   }
   const picked = byDeck.flatMap((l, i) => l.slice(0, take[i]));
-  return shuffle(picked, rand).map((e) => ({ ...e, order: optionOrder(e.card, rand) }));
+  return shuffle(picked, rand).map((e) => ({ ...e, order: optionOrder(e.card, rand, hard) }));
 }
 
 export function isCorrect(card: Card, chosen: number[]): boolean {

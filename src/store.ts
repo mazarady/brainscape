@@ -24,7 +24,8 @@ export type Action =
   | { type: 'addStudyTime'; classId: string; seconds: number }
   | { type: 'resetProgress'; classId: string; deckId?: string }
   | { type: 'quizAnswer'; classId: string; deckId: string; cardId: string; correct: boolean }
-  | { type: 'recordQuiz'; classId: string; result: QuizResult };
+  | { type: 'recordQuiz'; classId: string; result: QuizResult }
+  | { type: 'setHardMode'; classId: string; on: boolean };
 
 const mapClass = (s: AppState, id: string, fn: (c: StudyClass) => StudyClass): AppState => ({
   ...s,
@@ -58,6 +59,8 @@ export function reducer(s: AppState, a: Action): AppState {
           })),
         ),
       );
+    case 'setHardMode':
+      return mapClass(s, a.classId, (c) => ({ ...c, hardMode: a.on }));
     case 'recordQuiz':
       return mapClass(s, a.classId, (c) => ({ ...c, quizHistory: [...(c.quizHistory ?? []), a.result].slice(-100) }));
     case 'addClass': {

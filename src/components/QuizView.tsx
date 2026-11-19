@@ -25,10 +25,12 @@ export default function QuizView({
   const [retryIds, setRetryIds] = useState<string[] | null>(null);
   // Retrying missed questions is always practice-style, with instant feedback.
   const exam = mode === 'exam' && !retryIds;
+  // Fixed for the whole quiz, even if the toggle changes mid-way.
+  const [hard] = useState(!!cls.hardMode);
   // The question set is fixed for an attempt; card progress updates don't reshuffle it.
   const items = useMemo<QuizItem[]>(() => {
-    if (retryIds) return buildPractice(cls, deckIds, 1000).filter((i) => retryIds.includes(i.card.id));
-    return exam ? buildExam(cls, deckIds, count) : buildPractice(cls, deckIds, count);
+    if (retryIds) return buildPractice(cls, deckIds, 1000, { hard }).filter((i) => retryIds.includes(i.card.id));
+    return exam ? buildExam(cls, deckIds, count, { hard }) : buildPractice(cls, deckIds, count, { hard });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt]);
 
@@ -47,7 +49,9 @@ export default function QuizView({
 
   const item = items[index];
   const chosen = answers[index] ?? [];
-  const multi = item ? item.card.mc!.correct.length > 1 : false;
+  const reallyMulti = item ? item.card.mc!.correct.length > 1 : false;
+  // In hard mode every question is select-all-that-apply, so you can't tell how many are right.
+  const multi = hard || reallyMulti;
   const isChecked = !!checked[index];
   const answeredCount = Object.keys(answers).filter((k) => answers[+k]?.length).length;
   const results = items.map((it, i) => isCorrect(it.card, answers[i] ?? []));
@@ -76,7 +80,7 @@ export default function QuizView({
         dispatch({ type: 'quizAnswer', classId: cls.id, deckId: it.deckId, cardId: it.card.id, correct: isCorrect(it.card, answers[i] ?? []) }),
       );
     }
-    dispatch({ type: 'recordQuiz', classId: cls.id, result: { at: Date.now(), mode: exam ? 'exam' : 'practice', correct: score, total: items.length, deckIds } });
+    dispatch({ type: 'recordQuiz', classId: cls.id, result: { at: Date.now(), mode: exam ? 'exam' : 'practice', hard, correct: score, total: items.length, deckIds } });
     setFinished(true);
   };
 
@@ -143,7 +147,7 @@ export default function QuizView({
       <div className="quiz">
         <header className="quiz-top">
           <button className="icon-btn" onClick={onExit}>‹ Back to course</button>
-          <span className="muted">{exam ? 'Mock exam' : 'Practice quiz'} · {fmt(seconds)}</span>
+          <span className="muted">{exam ? 'Mock exam' : 'Practice quiz'}{hard ? ' (hard)' : ''} · {fmt(seconds)}</span>
         </header>
         <div className="quiz-results">
           <div className={`score-ring ${pct >= 80 ? 'good' : pct >= 60 ? 'ok' : 'low'}`}>
@@ -199,7 +203,7 @@ export default function QuizView({
         <button className="icon-btn" onClick={() => (exam && answeredCount && !confirm('Leave the exam? Your answers won’t be saved.') ? null : onExit())}>
           ‹ Exit
         </button>
-        <span className="quiz-title">{retryIds ? 'Retry missed' : exam ? 'Mock exam' : 'Practice quiz'}</span>
+        <span className="quiz-title">{retryIds ? 'Retry missed' : exam ? 'Mock exam' : 'Practice quiz'}{hard ? ' · Hard' : ''}</span>
         <span className="muted">{fmt(seconds)}</span>
       </header>
       <div className="quiz-progress">
@@ -220,11 +224,16 @@ export default function QuizView({
       <main className="quiz-main">
         <div className="quiz-meta">
           Question {index + 1} of {items.length}
-          <span className="dot-sep">·</span>
-          {deck?.name}
+          {(!hard || isChecked) && (
+            <>
+              <span className="dot-sep">·</span>
+              {deck?.name}
+            </>
+          )}
+          {hard && <span className="hard-badge">Hard</span>}
         </div>
         <h2 className="quiz-q">{item.card.question}</h2>
-        {multi && <div className="quiz-hint">Select every correct answer.</div>}
+        {hard ? <div className="quiz-hint">Select every answer you think is correct — there may be one or several.</div> : multi && <div className="quiz-hint">Select every correct answer.</div>}
         <div className="options" role={multi ? 'group' : 'radiogroup'}>
           {item.order.map((opt, pos) => {
             const sel = chosen.includes(opt);

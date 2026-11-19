@@ -213,6 +213,19 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
             <p className="muted small">
               {quizCards.length} multiple-choice questions in the selected sections · {mastered} answered correctly on their last try
             </p>
+            <label className="hard-toggle">
+              <input
+                type="checkbox"
+                role="switch"
+                checked={!!cls.hardMode}
+                onChange={(e) => dispatch({ type: 'setHardMode', classId: cls.id, on: e.target.checked })}
+              />
+              <span className="switch" aria-hidden="true" />
+              <span>
+                <strong>Hard mode</strong>
+                <span className="muted small"> — every question is “select all that apply”, no part names or hints, true/false shuffled, practice targets your weak spots</span>
+              </span>
+            </label>
             <div className="exam-buttons">
               <button
                 className="btn primary"
