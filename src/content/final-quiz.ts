@@ -72,6 +72,8 @@ export const finalQuiz: CourseModule = {
         'Cold water or hard work: add a safety margin and stay well within limits.',
         'Computer fails, no backup: ascend, make a safety stop and end the dive.',
         'Flying: after repetitive or multiday dives wait 18 hours (12 after a single dive), or longer if your computer says so.',
+        'Depth limits: new Open Water Divers 18 m / 60 ft (or training depth if shallower); all recreational divers 40 m / 130 ft.',
+        'Altitude diving: from 300 m / 1000 ft, follow altitude procedures and set your computer if it doesn’t adjust automatically.',
       ],
     },
   ],
@@ -106,5 +108,7 @@ export const finalQuiz: CourseModule = {
     one('fq-28', 'You’re diving in cold water or working hard on the dive. What should you do?', ['Add a safety margin and stay well within your computer’s limits', 'Stay longer, because nitrogen is absorbed more slowly', 'Use tables, as your computer probably won’t work', 'Nothing special, since your computer allows for it'], 0, 'Cold and hard work increase your DCS risk, and your computer can’t measure them, so stay well inside its limits (or use a conservative setting).'),
     one('fq-29', 'Your computer fails during a dive and you have no backup. What should you do?', ['Ascend, make a safety stop and end the dive', 'Borrow your buddy’s computer and keep diving', 'Continue until you’re low on air, then end the dive', 'Surface immediately, skipping the safety stop'], 0, 'You can’t track your profile, so signal your buddy, ascend slowly, make a safety stop and end the dive. If you stayed well within limits you should be fine.'),
     one('fq-30', 'You make two dives in one day and then fly home. Wait until your computer says you can fly, or how many hours, whichever is longer?', ['18 hours', '12 hours', '24 hours', '48 hours'], 0, 'For repetitive dives or multiple days of diving, wait at least 18 hours before flying. After a single dive, the minimum is 12 hours.'),
+    one('fq-31', 'As a new Open Water Diver, what is your recommended maximum depth (or your training depth, if shallower), and what is the limit for all recreational divers?', ['18 metres / 60 feet, and 40 metres / 130 feet', '10 metres / 30 feet, and 18 metres / 60 feet', '12 metres / 40 feet, and 30 metres / 100 feet', '24 metres / 80 feet, and 58 metres / 190 feet'], 0, 'New Open Water Divers should stay within 18 m / 60 ft, or the depth reached in training if shallower. No recreational diver should go deeper than 40 m / 130 ft.'),
+    one('fq-32', 'What applies when you dive at an altitude above 300 metres / 1000 feet?', ['You need special procedures and may need to set your computer for altitude', 'You don’t need special procedures, but may need to set your computer', 'You don’t need any special procedures at all', 'You can’t use a dive computer at altitude'], 0, 'You surface to lower atmospheric pressure, so altitude procedures apply from 300 m / 1000 ft. Many computers adjust automatically; others need an altitude setting.'),
   ],
 };
