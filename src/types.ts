@@ -48,6 +48,8 @@ export interface StudyClass {
   quizHistory?: QuizResult[];
   /** Harder quizzes: every question is select-all-that-apply and clues are hidden. */
   hardMode?: boolean;
+  /** Study and quizzes only use cards never studied or quizzed before. */
+  newOnly?: boolean;
 }
 
 export interface QuizResult {

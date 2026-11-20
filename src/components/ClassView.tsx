@@ -1,7 +1,7 @@
 import { useState, type Dispatch } from 'react';
 import Icon from './Icon';
 import type { Card, Deck, StudyClass } from '../types';
-import { allCards, mastery, ratingBreakdown, studiedCount } from '../scheduler';
+import { allCards, isNewCard, mastery, ratingBreakdown, studiedCount } from '../scheduler';
 import type { Action } from '../store';
 import type { View } from '../App';
 import ClassForm from './ClassForm';
@@ -63,6 +63,9 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
   const breakdown = ratingBreakdown(cards);
   const isCourse = !!cls.courseId;
   const quizCards = selectedCards.filter((c) => c.mc);
+  const newQuiz = quizCards.filter(isNewCard);
+  const newOnly = !!cls.newOnly;
+  const quizAvail = newOnly ? newQuiz : quizCards;
   const mastered = quizCards.filter((c) => (c.quizSeen ?? 0) > 0 && !c.quizLastWrong).length;
   const exams = (cls.quizHistory ?? []).filter((r) => r.mode === 'exam' && r.total > 0);
   const lastExam = exams[exams.length - 1];
@@ -213,6 +216,19 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
             <p className="muted small">
               {quizCards.length} multiple-choice questions in the selected sections · {mastered} answered correctly on their last try
             </p>
+            <label className="hard-toggle new-toggle">
+              <input
+                type="checkbox"
+                role="switch"
+                checked={!!cls.newOnly}
+                onChange={(e) => dispatch({ type: 'setNewOnly', classId: cls.id, on: e.target.checked })}
+              />
+              <span className="switch" aria-hidden="true" />
+              <span>
+                <strong>New cards only</strong>
+                <span className="muted small"> — studying and quizzes use only cards you haven’t seen yet ({newQuiz.length} left in the selected sections)</span>
+              </span>
+            </label>
             <label className="hard-toggle">
               <input
                 type="checkbox"
@@ -229,17 +245,17 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
             <div className="exam-buttons">
               <button
                 className="btn primary"
-                disabled={!quizCards.length}
+                disabled={!quizAvail.length}
                 onClick={() => go({ name: 'quiz', classId: cls.id, mode: 'practice', deckIds: cls.selectedDeckIds, count: 10, key: Date.now() })}
               >
-                Practice quiz · 10 questions
+                {newOnly ? 'New practice quiz' : 'Practice quiz'} · {Math.min(10, quizAvail.length)} questions
               </button>
               <button
                 className="btn exam"
-                disabled={!quizCards.length}
+                disabled={!quizAvail.length}
                 onClick={() => go({ name: 'quiz', classId: cls.id, mode: 'exam', deckIds: cls.selectedDeckIds, count: 25, key: Date.now() })}
               >
-                Mock exam · 25 questions
+                {newOnly ? 'New mock exam' : 'Mock exam'} · {Math.min(25, quizAvail.length)} questions
               </button>
             </div>
           </div>
@@ -308,6 +324,9 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
               const allOn = ids.every((id) => cls.selectedDeckIds.includes(id));
               const someOn = ids.some((id) => cls.selectedDeckIds.includes(id));
               const mcCount = gCards.filter((c) => c.mc).length;
+              const gNew = gCards.filter(isNewCard);
+              const gStudy = newOnly ? gNew.length : gCards.length;
+              const gQuiz = newOnly ? gNew.filter((c) => c.mc).length : mcCount;
               return (
                 <div key={key} className={`section-group ${open ? 'open' : ''}`}>
                   <div className="section-head">
@@ -327,16 +346,17 @@ export default function ClassView({ cls, dispatch, go }: { cls: StudyClass; disp
                       </span>
                       <span className="section-title">{g.section ?? 'Your decks'}</span>
                       <span className="muted small">
-                        {g.decks.length} part{g.decks.length === 1 ? '' : 's'} · {mcCount || gCards.length} {mcCount ? 'questions' : 'cards'} · {Math.round(mastery(gCards))}% mastery
+                        {g.decks.length} part{g.decks.length === 1 ? '' : 's'} · {mcCount || gCards.length} {mcCount ? 'questions' : 'cards'} · {Math.round(mastery(gCards))}% mastery{newOnly ? ` · ${gNew.length} new` : ''}
                       </span>
                     </button>
                     <div className="section-actions">
-                      <button className="btn sm" disabled={!gCards.length} onClick={() => go({ name: 'study', classId: cls.id, deckIds: ids })}>
+                      <button className="btn sm" disabled={!gStudy} onClick={() => go({ name: 'study', classId: cls.id, deckIds: ids })}>
                         Study section
                       </button>
                       {mcCount > 0 && (
                         <button
                           className="btn sm exam"
+                          disabled={!gQuiz}
                           onClick={() => go({ name: 'quiz', classId: cls.id, mode: 'exam', deckIds: ids, count: 25, key: Date.now() })}
                         >
                           25-question quiz

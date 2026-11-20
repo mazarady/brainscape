@@ -25,6 +25,9 @@ export function mastery(cards: Card[]): number {
   return (total / cards.length) * 100;
 }
 
+/** Never rated as a flashcard and never answered in a quiz. */
+export const isNewCard = (c: Card) => c.rating === 0 && !c.quizSeen;
+
 export function studiedCount(cards: Card[]): number {
   return cards.filter((c) => c.rating > 0).length;
 }

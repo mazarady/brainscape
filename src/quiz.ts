@@ -1,4 +1,5 @@
 import type { Card, StudyClass } from './types';
+import { isNewCard } from './scheduler';
 
 export interface QuizItem {
   deckId: string;
@@ -41,10 +42,10 @@ function optionOrder(card: Card, rand: () => number, shuffleTrueFalse = false): 
   return isTrueFalse(card.mc!.options) && !shuffleTrueFalse ? idx : shuffle(idx, rand);
 }
 
-export function quizPool(cls: StudyClass, deckIds: string[]) {
+export function quizPool(cls: StudyClass, deckIds: string[], newOnly = false) {
   return cls.decks
     .filter((d) => deckIds.includes(d.id))
-    .flatMap((d) => d.cards.filter((c) => c.mc).map((card) => ({ deckId: d.id, card })));
+    .flatMap((d) => d.cards.filter((c) => c.mc && (!newOnly || isNewCard(c))).map((card) => ({ deckId: d.id, card })));
 }
 
 /**
@@ -54,11 +55,13 @@ export function quizPool(cls: StudyClass, deckIds: string[]) {
 export interface QuizOptions {
   /** Hard mode: shuffle true/false too, and lean harder on weak questions in practice. */
   hard?: boolean;
+  /** Only questions never studied or quizzed before. */
+  newOnly?: boolean;
   rand?: () => number;
 }
 
-export function buildPractice(cls: StudyClass, deckIds: string[], count: number, { hard = false, rand = Math.random }: QuizOptions = {}): QuizItem[] {
-  const scored = quizPool(cls, deckIds).map((e) => {
+export function buildPractice(cls: StudyClass, deckIds: string[], count: number, { hard = false, newOnly = false, rand = Math.random }: QuizOptions = {}): QuizItem[] {
+  const scored = quizPool(cls, deckIds, newOnly).map((e) => {
     const seen = e.card.quizSeen ?? 0;
     const acc = seen ? (e.card.quizCorrect ?? 0) / seen : 0;
     const priority = hard
@@ -73,9 +76,9 @@ export function buildPractice(cls: StudyClass, deckIds: string[], count: number,
 }
 
 /** Exam: a random spread across all selected modules, in proportion to their size. */
-export function buildExam(cls: StudyClass, deckIds: string[], count: number, { hard = false, rand = Math.random }: QuizOptions = {}): QuizItem[] {
+export function buildExam(cls: StudyClass, deckIds: string[], count: number, { hard = false, newOnly = false, rand = Math.random }: QuizOptions = {}): QuizItem[] {
   const byDeck = deckIds
-    .map((id) => shuffle(quizPool(cls, [id]), rand))
+    .map((id) => shuffle(quizPool(cls, [id], newOnly), rand))
     .filter((l) => l.length);
   const total = byDeck.reduce((n, l) => n + l.length, 0);
   const want = Math.min(count, total);

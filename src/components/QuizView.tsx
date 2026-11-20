@@ -27,10 +27,11 @@ export default function QuizView({
   const exam = mode === 'exam' && !retryIds;
   // Fixed for the whole quiz, even if the toggle changes mid-way.
   const [hard] = useState(!!cls.hardMode);
+  const [newOnly] = useState(!!cls.newOnly);
   // The question set is fixed for an attempt; card progress updates don't reshuffle it.
   const items = useMemo<QuizItem[]>(() => {
     if (retryIds) return buildPractice(cls, deckIds, 1000, { hard }).filter((i) => retryIds.includes(i.card.id));
-    return exam ? buildExam(cls, deckIds, count, { hard }) : buildPractice(cls, deckIds, count, { hard });
+    return exam ? buildExam(cls, deckIds, count, { hard, newOnly }) : buildPractice(cls, deckIds, count, { hard, newOnly });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt]);
 
@@ -126,8 +127,12 @@ export default function QuizView({
     return (
       <div className="quiz">
         <div className="quiz-empty">
-          <h2>No questions available</h2>
-          <p className="muted">Select at least one section that has practice questions.</p>
+          <h2>{newOnly ? 'No new questions left' : 'No questions available'}</h2>
+          <p className="muted">
+            {newOnly
+              ? 'You’ve seen every question here. Turn off “New cards only” to keep practising.'
+              : 'Select at least one section that has practice questions.'}
+          </p>
           <button className="btn primary" onClick={onExit}>Back</button>
         </div>
       </div>

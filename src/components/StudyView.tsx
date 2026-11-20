@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import Icon from './Icon';
 import type { Rating, StudyClass } from '../types';
-import { allCards, mastery, pickNext, studyPool } from '../scheduler';
+import { allCards, isNewCard, mastery, pickNext, studyPool } from '../scheduler';
 import type { Action } from '../store';
 import { MasteryRing, RATING_COLORS, RatingBar } from './ClassView';
 import Modal from './Modal';
@@ -59,7 +59,11 @@ export default function StudyView({
 }) {
   // A single-deck study session overrides the class's deck selection.
   const scoped: StudyClass = deckIds ? { ...cls, selectedDeckIds: deckIds } : cls;
-  const pool = studyPool(scoped);
+  // New-only: fix the set of unseen cards when the session starts, so cards you rate
+  // low still come back for another look during this session.
+  const [newOnly] = useState(!!cls.newOnly);
+  const [newIds] = useState(() => new Set(studyPool(scoped).filter((e) => isNewCard(e.card)).map((e) => e.card.id)));
+  const pool = newOnly ? studyPool(scoped).filter((e) => newIds.has(e.card.id)) : studyPool(scoped);
 
   const [current, setCurrent] = useState<Current | null>(null);
   const [lastCardId, setLastCardId] = useState<string>();
@@ -233,8 +237,10 @@ export default function StudyView({
           </div>
         ) : !entry ? (
           <div className="round-summary">
-            <h2>No cards to study</h2>
-            <p className="muted">Select at least one deck that has cards.</p>
+            <h2>{newOnly ? 'No new cards left' : 'No cards to study'}</h2>
+            <p className="muted">
+              {newOnly ? 'You’ve seen every card here. Turn off “New cards only” to review them.' : 'Select at least one deck that has cards.'}
+            </p>
             <button className="btn primary" onClick={onExit}>Back to class</button>
           </div>
         ) : (
