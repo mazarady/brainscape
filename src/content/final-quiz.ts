@@ -13,6 +13,7 @@ export const finalQuiz: CourseModule = {
     ['fq-08', 'Air Use at Depth'],
     ['fq-12', 'Hand Signals'],
     ['fq-20', 'Problem Management & Conditions'],
+    ['fq-25', 'Dive Computers & DCS'],
   ],
   notes: [
     {
@@ -62,6 +63,17 @@ export const finalQuiz: CourseModule = {
         'DCS risk goes up when you dive tired, cold, sick, dehydrated or injured; also with poor fitness, high body fat, age, alcohol, and hard exercise around the dive.',
       ],
     },
+    {
+      heading: 'Dive computers & DCS',
+      points: [
+        '⭐ Suspected DCS: lie down, breathe 100% emergency oxygen, contact emergency medical care. Almost all cases need a recompression chamber. Never go back in the water.',
+        'Plan mode / no stop scroll: shows the no stop time at each depth in 3 m / 10 ft steps.',
+        'Went past the no stop limit: follow your computer’s emergency decompression instructions.',
+        'Cold water or hard work: add a safety margin and stay well within limits.',
+        'Computer fails, no backup: ascend, make a safety stop and end the dive.',
+        'Flying: after repetitive or multiday dives wait 18 hours (12 after a single dive), or longer if your computer says so.',
+      ],
+    },
   ],
   questions: [
     one('fq-01', 'Where is the best place to secure your alternate air source?', ['In the triangle between your chin and the lower corners of your rib cage', 'Loose by your side so you can find it quickly', 'At the base of your cylinder, clipped to the cylinder band', 'On the back of your BCD between your shoulder blades and waist'], 0, 'Clipped in the triangle from your chin to the lower corners of your rib cage, you and your buddy can find it fast. A dangling alternate gets damaged and clogged.'),
@@ -88,5 +100,11 @@ export const finalQuiz: CourseModule = {
     one('fq-22', 'You feel a mild current at the start of your dive. How should you begin?', ['Swim against (into) the current', 'Swim with the current', 'Swim across the current', 'Swim at an angle to the current'], 0, 'Swimming into the current first means it helps carry you back to your exit at the end of the dive, when you’re more tired and lower on air.'),
     one('fq-23', 'You are close to your buddy and realise you are out of air. What is the best response?', ['Switch to your buddy’s alternate air source and ascend', 'Make a controlled emergency swimming ascent', 'Drop your weights for a buoyant emergency ascent', 'Switch to your buddy’s alternate and finish the dive'], 0, 'With a buddy nearby, an alternate air source ascent is the best option. End the dive: don’t carry on sharing air.'),
     one('fq-24', 'Which of these is likely to increase your risk of decompression sickness (DCS)?', ['Diving while tired, cold, sick, thirsty or injured', 'Diving in poor visibility, currents or rough seas', 'Not looking after your equipment properly', 'Using a dive computer to plan your dive'], 0, 'Fatigue, cold, illness, dehydration and injury all affect how your body releases nitrogen. Other factors include poor fitness, high body fat, age, alcohol, and hard exercise before, during or right after a dive.'),
+    one('fq-25', 'You think you have decompression sickness. What should you do?', ['Breathe 100% oxygen and contact emergency medical care', 'Stop diving and wait until you feel better', 'Go back in the water to recompress yourself', 'See a doctor when it is convenient'], 0, 'Lie down, breathe emergency oxygen and get emergency medical care right away. Almost all cases need a recompression chamber, so never wait or go back in the water.'),
+    one('fq-26', 'What does the “plan” or “no stop scroll” mode on your computer show?', ['The no stop time limit at each depth, usually in 3 m / 10 ft steps', 'The maximum depth you reached on your previous dive', 'Whether your computer works with your buddy’s computer', 'The best settings to use on your backup computer'], 0, 'Scroll through the depths to see the maximum time allowed at each, then agree a maximum depth and time with your buddy.'),
+    one('fq-27', 'You accidentally go past your computer’s no stop limit. What should you do?', ['Follow the computer’s instructions for emergency decompression', 'Make a three-minute safety stop at 5 m / 15 ft and surface', 'Surface immediately, then breathe oxygen and report it', 'Ascend and check the manual for decompression procedures'], 0, 'Your computer switches to decompression mode and shows the stop depth and how long to stay there before you can surface.'),
+    one('fq-28', 'You’re diving in cold water or working hard on the dive. What should you do?', ['Add a safety margin and stay well within your computer’s limits', 'Stay longer, because nitrogen is absorbed more slowly', 'Use tables, as your computer probably won’t work', 'Nothing special, since your computer allows for it'], 0, 'Cold and hard work increase your DCS risk, and your computer can’t measure them, so stay well inside its limits (or use a conservative setting).'),
+    one('fq-29', 'Your computer fails during a dive and you have no backup. What should you do?', ['Ascend, make a safety stop and end the dive', 'Borrow your buddy’s computer and keep diving', 'Continue until you’re low on air, then end the dive', 'Surface immediately, skipping the safety stop'], 0, 'You can’t track your profile, so signal your buddy, ascend slowly, make a safety stop and end the dive. If you stayed well within limits you should be fine.'),
+    one('fq-30', 'You make two dives in one day and then fly home. Wait until your computer says you can fly, or how many hours, whichever is longer?', ['18 hours', '12 hours', '24 hours', '48 hours'], 0, 'For repetitive dives or multiple days of diving, wait at least 18 hours before flying. After a single dive, the minimum is 12 hours.'),
   ],
 };
