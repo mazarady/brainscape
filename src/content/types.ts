@@ -5,6 +5,8 @@ export interface CourseQuestion {
   /** Indexes into `options`. More than one means "choose all that apply". */
   correct: number[];
   explain: string;
+  /** Picture shown with the question, e.g. a hand signal (path under /public). */
+  image?: string;
 }
 
 export interface CourseModule {

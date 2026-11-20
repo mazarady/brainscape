@@ -271,6 +271,7 @@ export default function StudyView({
               <div className="face question">
                 <span className="face-tag">Q</span>
                 <div className="face-body">
+                  {entry.card.mc?.image && <img className="q-image" src={entry.card.mc.image} alt="Hand signal" />}
                   <div className="face-text">{entry.card.question}</div>
                   {mcOrder && (
                     <ol className="fc-options">

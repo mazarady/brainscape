@@ -47,7 +47,7 @@ export function syncCourse(state: AppState, course: Course): AppState {
       const content = {
         question: q.q,
         answer: answerText(q),
-        mc: { options: q.options, correct: q.correct, explain: q.explain, source },
+        mc: { options: q.options, correct: q.correct, explain: q.explain, source, ...(q.image ? { image: q.image } : {}) },
         builtIn: true,
       };
       return old ? { ...old, ...content } : { id, rating: 0, dueStep: 0, timesSeen: 0, ...content };

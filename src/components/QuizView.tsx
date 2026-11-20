@@ -184,6 +184,7 @@ export default function QuizView({
           <ol className="review-list">
             {missed.map(({ it, i }) => (
               <li key={it.card.id}>
+                {it.card.mc!.image && <img className="q-image sm" src={it.card.mc!.image} alt="Hand signal" />}
                 <div className="review-q">{it.card.question}</div>
                 <div className="review-yours">
                   Your answer: {(answers[i] ?? []).length ? (answers[i] ?? []).map((o) => it.card.mc!.options[o]).join('; ') : '— (no answer)'}
@@ -237,6 +238,7 @@ export default function QuizView({
           )}
           {hard && <span className="hard-badge">Hard</span>}
         </div>
+        {item.card.mc!.image && <img className="q-image" src={item.card.mc!.image} alt="Hand signal" />}
         <h2 className="quiz-q">{hard ? item.card.question.replace(/\s*\(Choose all that apply\.\)$/, '') : item.card.question}</h2>
         {hard ? <div className="quiz-hint">Select every answer you think is correct — there may be one or several.</div> : multi && <div className="quiz-hint">Select every correct answer.</div>}
         <div className="options" role={multi ? 'group' : 'radiogroup'}>

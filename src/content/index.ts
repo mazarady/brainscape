@@ -17,6 +17,7 @@ import { skills4 } from './section4-skills';
 import { computers2 } from './section5-computers';
 import { beingADiver5 } from './section5-being-a-diver';
 import { skills5 } from './section5-skills';
+import { finalQuiz } from './final-quiz';
 
 export const PADI_OPEN_WATER: Course = {
   id: 'padi-ow',
@@ -26,7 +27,7 @@ export const PADI_OPEN_WATER: Course = {
   icon: '🤿',
   color: '#0b7fab',
   examQuestions: 25,
-  modules: [beingADiver1, equipment1, skills1, beingADiver2, equipment2, skills2, beingADiver3, problemManagement, equipment3, skills3, equipment4, beingADiver4, computers1, ambassador, skills4, computers2, beingADiver5, skills5],
+  modules: [beingADiver1, equipment1, skills1, beingADiver2, equipment2, skills2, beingADiver3, problemManagement, equipment3, skills3, equipment4, beingADiver4, computers1, ambassador, skills4, computers2, beingADiver5, skills5, finalQuiz],
 };
 
 export const COURSES = [PADI_OPEN_WATER];
