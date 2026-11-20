@@ -59,6 +59,7 @@ export const finalQuiz: CourseModule = {
         'You’re most likely to lose track of up and down in midwater, where you can’t see the bottom or surface.',
         'Mild current: start the dive swimming into it, so it carries you back at the end.',
         'Out of air with your buddy close by: use their alternate air source and ascend together.',
+        'DCS risk goes up when you dive tired, cold, sick, dehydrated or injured; also with poor fitness, high body fat, age, alcohol, and hard exercise around the dive.',
       ],
     },
   ],
@@ -86,5 +87,6 @@ export const finalQuiz: CourseModule = {
     one('fq-21', 'Where are you most likely to get confused about which way is up?', ['In midwater', 'At the surface', 'Near the surface', 'On the bottom'], 0, 'In midwater, especially in poor visibility, you can’t see the bottom or the surface to orient yourself. Use a line, your computer or your bubbles.'),
     one('fq-22', 'You feel a mild current at the start of your dive. How should you begin?', ['Swim against (into) the current', 'Swim with the current', 'Swim across the current', 'Swim at an angle to the current'], 0, 'Swimming into the current first means it helps carry you back to your exit at the end of the dive, when you’re more tired and lower on air.'),
     one('fq-23', 'You are close to your buddy and realise you are out of air. What is the best response?', ['Switch to your buddy’s alternate air source and ascend', 'Make a controlled emergency swimming ascent', 'Drop your weights for a buoyant emergency ascent', 'Switch to your buddy’s alternate and finish the dive'], 0, 'With a buddy nearby, an alternate air source ascent is the best option. End the dive: don’t carry on sharing air.'),
+    one('fq-24', 'Which of these is likely to increase your risk of decompression sickness (DCS)?', ['Diving while tired, cold, sick, thirsty or injured', 'Diving in poor visibility, currents or rough seas', 'Not looking after your equipment properly', 'Using a dive computer to plan your dive'], 0, 'Fatigue, cold, illness, dehydration and injury all affect how your body releases nitrogen. Other factors include poor fitness, high body fat, age, alcohol, and hard exercise before, during or right after a dive.'),
   ],
 };
