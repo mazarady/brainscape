@@ -12,6 +12,7 @@ export const finalQuiz: CourseModule = {
     ['fq-04', 'Being a Diver'],
     ['fq-08', 'Air Use at Depth'],
     ['fq-12', 'Hand Signals'],
+    ['fq-20', 'Problem Management & Conditions'],
   ],
   notes: [
     {
@@ -48,6 +49,16 @@ export const finalQuiz: CourseModule = {
         'Out of air: flat hand slicing across your throat.',
         'Low on air: fist held against your chest.',
         'Distress / help at the surface: wave an arm (or both) over your head.',
+        'Share air: fingers pointing back and forth at your mouth.',
+      ],
+    },
+    {
+      heading: 'Problem management & conditions',
+      points: [
+        'Buddy separation: search for no more than one minute, then surface and reunite.',
+        'You’re most likely to lose track of up and down in midwater, where you can’t see the bottom or surface.',
+        'Mild current: start the dive swimming into it, so it carries you back at the end.',
+        'Out of air with your buddy close by: use their alternate air source and ascend together.',
       ],
     },
   ],
@@ -68,7 +79,12 @@ export const finalQuiz: CourseModule = {
     signal(one('fq-14', SHOWN, ['OK? / OK!', 'Out of air', 'Look at your gauge', 'Something is wrong'], 0, 'Thumb and index finger in a circle, other fingers straight, asks or answers “OK?” underwater.'), 'ok'),
     signal(one('fq-15', SHOWN, ['OK at the surface', 'I need help at the surface', 'Go down now', 'Stay where you are'], 0, 'Both arms over your head with fingertips touching (or one hand on your head) signals OK at the surface where a hand signal is hard to see.'), 'surface-ok'),
     signal(one('fq-16', SHOWN, ['Out of air', 'Stay at this depth', 'Go this way', 'Which way to the boat?'], 0, 'A flat hand slicing across your throat means out of air. Follow it with the “share air” signal.'), 'out-of-air'),
-    one('fq-17', 'Underwater, a diver holds a closed fist against their chest. What does this mean?', ['Low on air', 'Out of air', 'I’m cold', 'Something is wrong'], 0, 'A fist on the chest means low on air: it’s time to end the dive. Out of air is a flat hand across the throat.'),
+    signal(one('fq-17', SHOWN, ['Low on air', 'Look at me', 'Share air', 'Go up'], 0, 'A fist held against your chest means low on air: time to end the dive. Out of air is a flat hand across the throat.'), 'low-on-air'),
     one('fq-18', 'At the surface, which signal means distress, “I need help”?', ['Waving an arm over your head', 'Both arms over your head, fingertips touching', 'One hand placed on top of your head', 'Thumb and finger making a circle'], 0, 'Waving an arm (or both) means distress. The arms-overhead circle and hand on head both mean OK at the surface.'),
+    signal(one('fq-19', SHOWN, ['Share air', 'Turn the dive', 'I’m thirsty', 'I’ve lost my regulator'], 0, 'Fingers pointing back and forth at your mouth means share air. It usually follows the out-of-air signal.'), 'share-air'),
+    one('fq-20', 'You get separated from your buddy. What is the general procedure?', ['Search for no more than a minute, then surface to reunite', 'Surface right away, wait a minute, then go back down', 'Surface right away and get out of the water', 'Find your buddy’s bubbles and follow them'], 0, 'Look around for up to a minute. If you don’t find each other, both surface, reunite and continue together.'),
+    one('fq-21', 'Where are you most likely to get confused about which way is up?', ['In midwater', 'At the surface', 'Near the surface', 'On the bottom'], 0, 'In midwater, especially in poor visibility, you can’t see the bottom or the surface to orient yourself. Use a line, your computer or your bubbles.'),
+    one('fq-22', 'You feel a mild current at the start of your dive. How should you begin?', ['Swim against (into) the current', 'Swim with the current', 'Swim across the current', 'Swim at an angle to the current'], 0, 'Swimming into the current first means it helps carry you back to your exit at the end of the dive, when you’re more tired and lower on air.'),
+    one('fq-23', 'You are close to your buddy and realise you are out of air. What is the best response?', ['Switch to your buddy’s alternate air source and ascend', 'Make a controlled emergency swimming ascent', 'Drop your weights for a buoyant emergency ascent', 'Switch to your buddy’s alternate and finish the dive'], 0, 'With a buddy nearby, an alternate air source ascent is the best option. End the dive: don’t carry on sharing air.'),
   ],
 };
