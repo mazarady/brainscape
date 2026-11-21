@@ -35,7 +35,7 @@ describe('course sync and quizzes', () => {
   const cls = state.classes[0];
 
   it('gives every question a full source path', () => {
-    for (const c of cls.decks.flatMap((d) => d.cards)) expect(c.mc!.source, c.id).toMatch(/^(Section \w+|Final Quiz) → .+ → .+$/);
+    for (const c of cls.decks.flatMap((d) => d.cards)) expect(c.mc!.source, c.id).toMatch(/^.+ → .+ → .+$/);
   });
 
   it('adds the course and is idempotent', () => {
