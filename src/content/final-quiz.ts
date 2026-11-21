@@ -1,7 +1,4 @@
-import { one, type CourseModule, type CourseQuestion } from './types';
-
-const signal = (q: CourseQuestion, image: string): CourseQuestion => ({ ...q, image: `/signals/${image}.webp` });
-const SHOWN = 'What does the hand signal shown mean?';
+import { one, type CourseModule } from './types';
 
 export const finalQuiz: CourseModule = {
   id: 'final-quiz',
@@ -11,7 +8,6 @@ export const finalQuiz: CourseModule = {
     ['fq-01', 'Equipment'],
     ['fq-04', 'Being a Diver'],
     ['fq-08', 'Air Use at Depth'],
-    ['fq-12', 'Hand Signals'],
     ['fq-20', 'Problem Management & Conditions'],
     ['fq-25', 'Dive Computers & DCS'],
   ],
@@ -38,19 +34,6 @@ export const finalQuiz: CourseModule = {
       points: [
         'You use air faster the deeper you go, in proportion to the absolute pressure: 1 bar at the surface, plus 1 bar for every 10 metres / 33 feet.',
         'Time at depth = time at the surface ÷ absolute pressure. Air that lasts 60 minutes at the surface lasts 30 at 10 m (2 bar), 20 at 20 m (3 bar) and 15 at 30 m (4 bar).',
-      ],
-    },
-    {
-      heading: 'Hand signals',
-      points: [
-        'Stop / hold it / stay there: flat palm facing your buddy.',
-        'Something is wrong: flat hand rocked side to side, then point to the problem.',
-        'OK underwater: thumb and finger make a circle, other fingers straight.',
-        'OK at the surface: both arms over your head with fingertips touching, or one hand on top of your head.',
-        'Out of air: flat hand slicing across your throat.',
-        'Low on air: fist held against your chest.',
-        'Distress / help at the surface: wave an arm (or both) over your head.',
-        'Share air: fingers pointing back and forth at your mouth.',
       ],
     },
     {
@@ -89,14 +72,6 @@ export const finalQuiz: CourseModule = {
     one('fq-09', 'Your air would last 60 minutes at the surface. About how long would it last at 20 metres / 66 feet?', ['20 minutes', '30 minutes', '40 minutes', '15 minutes'], 0, 'At 20 m the absolute pressure is 3 bar: 60 ÷ 3 = 20 minutes.'),
     one('fq-10', 'Your air would last 60 minutes at the surface. About how long would it last at 30 metres / 99 feet?', ['15 minutes', '20 minutes', '30 minutes', '10 minutes'], 0, 'At 30 m the absolute pressure is 4 bar: 60 ÷ 4 = 15 minutes.'),
     one('fq-11', 'If your air lasts X minutes at the surface, how do you work out how long it lasts at depth?', ['Divide X by the absolute pressure at that depth', 'Multiply X by the absolute pressure at that depth', 'Subtract the depth in metres from X', 'Divide X by the depth in metres'], 0, 'Absolute pressure is 1 bar plus 1 bar per 10 m / 33 ft. Each breath at depth takes that many times more air, so time = X ÷ absolute pressure.'),
-    signal(one('fq-12', SHOWN, ['Stop, hold it, stay there', 'Go back the way we came', 'Please be quiet', 'Go up to the surface'], 0, 'A flat palm facing your buddy means stop, hold it or stay there.'), 'stop'),
-    signal(one('fq-13', SHOWN, ['Something is wrong', 'Stop, hold it, stay there', 'I’m cold', 'Slow down'], 0, 'A flat hand rocked side to side means something is wrong. Follow it by pointing to the problem, such as your ear.'), 'problem'),
-    signal(one('fq-14', SHOWN, ['OK? / OK!', 'Out of air', 'Look at your gauge', 'Something is wrong'], 0, 'Thumb and index finger in a circle, other fingers straight, asks or answers “OK?” underwater.'), 'ok'),
-    signal(one('fq-15', SHOWN, ['OK at the surface', 'I need help at the surface', 'Go down now', 'Stay where you are'], 0, 'Both arms over your head with fingertips touching (or one hand on your head) signals OK at the surface where a hand signal is hard to see.'), 'surface-ok'),
-    signal(one('fq-16', SHOWN, ['Out of air', 'Stay at this depth', 'Go this way', 'Which way to the boat?'], 0, 'A flat hand slicing across your throat means out of air. Follow it with the “share air” signal.'), 'out-of-air'),
-    signal(one('fq-17', SHOWN, ['Low on air', 'Look at me', 'Share air', 'Go up'], 0, 'A fist held against your chest means low on air: time to end the dive. Out of air is a flat hand across the throat.'), 'low-on-air'),
-    one('fq-18', 'At the surface, which signal means distress, “I need help”?', ['Waving an arm over your head', 'Both arms over your head, fingertips touching', 'One hand placed on top of your head', 'Thumb and finger making a circle'], 0, 'Waving an arm (or both) means distress. The arms-overhead circle and hand on head both mean OK at the surface.'),
-    signal(one('fq-19', SHOWN, ['Share air', 'Turn the dive', 'I’m thirsty', 'I’ve lost my regulator'], 0, 'Fingers pointing back and forth at your mouth means share air. It usually follows the out-of-air signal.'), 'share-air'),
     one('fq-20', 'You get separated from your buddy. What is the general procedure?', ['Search for no more than a minute, then surface to reunite', 'Surface right away, wait a minute, then go back down', 'Surface right away and get out of the water', 'Find your buddy’s bubbles and follow them'], 0, 'Look around for up to a minute. If you don’t find each other, both surface, reunite and continue together.'),
     one('fq-21', 'Where are you most likely to get confused about which way is up?', ['In midwater', 'At the surface', 'Near the surface', 'On the bottom'], 0, 'In midwater, especially in poor visibility, you can’t see the bottom or the surface to orient yourself. Use a line, your computer or your bubbles.'),
     one('fq-22', 'You feel a mild current at the start of your dive. How should you begin?', ['Swim against (into) the current', 'Swim with the current', 'Swim across the current', 'Swim at an angle to the current'], 0, 'Swimming into the current first means it helps carry you back to your exit at the end of the dive, when you’re more tired and lower on air.'),
