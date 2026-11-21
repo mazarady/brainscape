@@ -19,6 +19,8 @@ export interface CourseModule {
   /** Key points to read before practising, one per bullet. */
   notes: { heading: string; points: string[] }[];
   questions: CourseQuestion[];
+  /** Questions in this module need the RDP: show a button to open the table. */
+  rdpTable?: boolean;
 }
 
 export interface Course {

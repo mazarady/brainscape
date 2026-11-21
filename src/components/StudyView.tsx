@@ -5,6 +5,7 @@ import { allCards, isNewCard, mastery, pickNext, studyPool } from '../scheduler'
 import type { Action } from '../store';
 import { MasteryRing, RATING_COLORS, RatingBar } from './ClassView';
 import Modal from './Modal';
+import RdpTableButton from './RdpTable';
 import { flashcardOrder, LETTERS } from '../quiz';
 
 const ROUND_SIZE = 10;
@@ -76,6 +77,7 @@ export default function StudyView({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({ q: '', a: '' });
   const unsaved = useRef(0);
+  const [tableOpen, setTableOpen] = useState(false);
   const roundDone = roundRatings.length >= ROUND_SIZE;
 
   // Timer: counts while the round is in progress; flushes to the class total periodically and on exit.
@@ -132,7 +134,7 @@ export default function StudyView({
   // Keyboard shortcuts: one listener; it always calls the latest handler via a ref.
   const keyHandler = useRef<(e: KeyboardEvent) => void>(() => {});
   keyHandler.current = (e: KeyboardEvent) => {
-    if (editing || e.repeat || (e.target as HTMLElement).closest('input, textarea')) return;
+    if (tableOpen || editing || e.repeat || (e.target as HTMLElement).closest('input, textarea')) return;
     if (e.key === 'Escape') onExit();
     else if (roundDone) {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -249,6 +251,7 @@ export default function StudyView({
               <span>Deck: <strong>{deck?.name}</strong></span>
               <span>Card: <strong>{cardIndex}/{deck?.cards.length}</strong></span>
               <span className="muted small">Seen {entry.card.timesSeen}×</span>
+              {entry.card.mc?.rdpTable && <RdpTableButton open={tableOpen} setOpen={setTableOpen} />}
             </div>
             <div className={`flashcard ${revealed ? 'revealed' : ''}`}>
               <div className="flashcard-head" style={{ background: cls.color }}>

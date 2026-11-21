@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type Dispatch } from 'react';
 import Icon from './Icon';
 import type { StudyClass } from '../types';
 import type { Action } from '../store';
+import RdpTableButton from './RdpTable';
 import { buildExam, buildPractice, isCorrect, LETTERS, type QuizItem } from '../quiz';
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
@@ -41,6 +42,7 @@ export default function QuizView({
   const [finished, setFinished] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const recorded = useRef(false);
+  const [tableOpen, setTableOpen] = useState(false);
 
   useEffect(() => {
     if (finished) return;
@@ -107,7 +109,7 @@ export default function QuizView({
   // Keyboard: A–D / 1–4 pick, Enter checks or moves on.
   const keyRef = useRef<(e: KeyboardEvent) => void>(() => {});
   keyRef.current = (e) => {
-    if (finished || !item || (e.target as HTMLElement).closest('input, textarea')) return;
+    if (tableOpen || finished || !item || (e.target as HTMLElement).closest('input, textarea')) return;
     const k = e.key.toUpperCase();
     const pos = /^[1-8]$/.test(k) ? Number(k) - 1 : LETTERS.indexOf(k);
     if (pos >= 0 && pos < item.order.length && k.length === 1) choose(item.order[pos]);
@@ -237,6 +239,7 @@ export default function QuizView({
             </>
           )}
           {hard && <span className="hard-badge">Hard</span>}
+          {item.card.mc!.rdpTable && <RdpTableButton open={tableOpen} setOpen={setTableOpen} />}
         </div>
         {item.card.mc!.image && <img className="q-image" src={item.card.mc!.image} alt="Hand signal" />}
         <h2 className="quiz-q">{hard ? item.card.question.replace(/\s*\(Choose all that apply\.\)$/, '') : item.card.question}</h2>

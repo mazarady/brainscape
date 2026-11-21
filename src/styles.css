@@ -451,3 +451,15 @@ code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
 /* Picture questions (hand signals) */
 .q-image { display: block; width: 100%; max-width: 420px; max-height: 280px; object-fit: contain; border-radius: 10px; margin: 0 0 14px; background: #e8f4f8; }
 .q-image.sm { max-width: 160px; max-height: 110px; margin-bottom: 6px; }
+
+/* RDP table viewer */
+.modal.wide { width: min(1100px, 100%); }
+.rdp-btn { margin-left: auto; }
+.quiz-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.rdp-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.rdp-tabs { display: inline-flex; background: #eef1f5; border-radius: 999px; padding: 3px; }
+.rdp-tabs button { border: none; background: none; padding: 6px 16px; border-radius: 999px; font-weight: 600; color: var(--muted); }
+.rdp-tabs button.on { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.rdp-pages { display: flex; flex-direction: column; gap: 16px; overflow: auto; -webkit-overflow-scrolling: touch; }
+.rdp-pages img { display: block; width: 100%; height: auto; border: 1px solid #e3e6eb; border-radius: 8px; background: #fff; }
+.rdp-pages.zoomed img { width: 260%; max-width: none; }

@@ -10,7 +10,7 @@ export interface Card {
   timesSeen: number;
   lastStudiedAt?: number;
   /** Multiple-choice data for built-in course questions. */
-  mc?: { options: string[]; correct: number[]; explain: string; source?: string; image?: string };
+  mc?: { options: string[]; correct: number[]; explain: string; source?: string; image?: string; rdpTable?: boolean };
   /** Card comes from a built-in course and is kept in sync with it. */
   builtIn?: boolean;
   quizSeen?: number;
